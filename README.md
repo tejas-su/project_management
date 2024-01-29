@@ -1,4 +1,10 @@
 # project_management
 
-A Project MAnagement system created using flutter
+A Project Management system created using flutter
+
+# Tech Stacks
+
+Flutter
+Supabase
+PostgresSQL
 
