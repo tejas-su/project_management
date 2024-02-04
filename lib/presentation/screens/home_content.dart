@@ -4,8 +4,21 @@ import '../components/bugs_section.dart';
 import '../components/comments_section.dart';
 import '../themes/themes.dart';
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  bool selected = false;
+  //on tap of list tile event handler
+  void onTap(index) {
+    setState(() {
+      selected = !selected;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,30 +36,43 @@ class HomeContent extends StatelessWidget {
               border:
                   Border(right: BorderSide(width: 3, color: whiteContainer))),
           child: ListView.builder(
-            itemBuilder: (context, index) => const ListTile(
-              leading:
-                  CircleAvatar(foregroundImage: AssetImage('avatars/man.png')),
-              title: Text('Kraken'),
-              subtitle: Text(
-                'A simple project management tool',
-                style: TextStyle(fontSize: 12),
-              ),
-              trailing: IconButton(
-                  onPressed: null,
-                  icon: Icon(
-                    Icons.edit_rounded,
-                    size: 20,
-                    color: black,
-                  )),
-              horizontalTitleGap: 10,
-            ),
             itemCount: 6,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
+              child: ListTile(
+                shape: const BeveledRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                focusColor: whiteContainer,
+                hoverColor: whiteContainer,
+                autofocus: true,
+                selected: selected,
+                selectedColor: black,
+                selectedTileColor: whiteContainer,
+                onTap: () => onTap(index),
+                enabled: true,
+                tileColor: whiteBG,
+                leading: const CircleAvatar(
+                    foregroundImage: AssetImage('avatars/man.png')),
+                title: const Text('Kraken'),
+                subtitle: const Text(
+                  'A simple project management tool',
+                  style: TextStyle(fontSize: 12),
+                ),
+                trailing: const IconButton(
+                    onPressed: null,
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      size: 20,
+                      color: black,
+                    )),
+                horizontalTitleGap: 10,
+              ),
+            ),
           ),
         ),
         //
         //Users Section
         //
-
         Container(
           height: 800,
           width: 350,
@@ -70,7 +96,6 @@ class HomeContent extends StatelessWidget {
             itemCount: 3,
           ),
         ),
-
         //
         //bugs section
         //

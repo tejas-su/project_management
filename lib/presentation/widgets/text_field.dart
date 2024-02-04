@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../themes/themes.dart';
 
 class InputTextField extends StatelessWidget {
+  final TextEditingController? controller;
   final IconButton? suffixIcon;
   final double bottom;
   final double left;
@@ -11,6 +12,7 @@ class InputTextField extends StatelessWidget {
   final Color? color;
   const InputTextField(
       {super.key,
+      this.controller,
       this.bottom = 0,
       this.left = 80,
       this.right = 80,
@@ -28,6 +30,7 @@ class InputTextField extends StatelessWidget {
             color: color,
             borderRadius: const BorderRadius.all(Radius.circular(10))),
         child: TextField(
+          controller: controller,
           showCursor: true,
           obscureText: obscureText,
           decoration: InputDecoration(

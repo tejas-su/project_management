@@ -5,18 +5,18 @@ import '../widgets/cta_button.dart';
 import '../widgets/text_field.dart';
 import '../themes/themes.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignUpScreen extends StatelessWidget {
   final Function()? onTap;
-  const SignInScreen({super.key, required this.onTap});
+  const SignUpScreen({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     //user controller
     TextEditingController userController = TextEditingController();
     //group controller
-    TextEditingController groupController = TextEditingController();
-    //password controller
     TextEditingController passwordController = TextEditingController();
+    //password controller
+    TextEditingController retypePasswordController = TextEditingController();
     return Scaffold(
       body: Center(
         child: Row(
@@ -86,15 +86,6 @@ class SignInScreen extends StatelessWidget {
                       height: 20,
                     ),
                     InputTextField(
-                      controller: groupController,
-                      hintText: 'Group ID or Group Name',
-                      left: 100,
-                      right: 100,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    InputTextField(
                         controller: passwordController,
                         left: 100,
                         right: 100,
@@ -103,8 +94,17 @@ class SignInScreen extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
+                    InputTextField(
+                        controller: retypePasswordController,
+                        left: 100,
+                        right: 100,
+                        hintText: 'Retype Password',
+                        obscureText: true),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     CTAButton(
-                      text: 'Sign in',
+                      text: 'Register',
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const HomeScreen(),
                       )),
@@ -118,13 +118,13 @@ class SignInScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Don't have an account? ",
+                          "Already have an account ?",
                           style: TextStyle(fontSize: 10),
                         ),
                         GestureDetector(
                           onTap: onTap,
                           child: const Text(
-                            "Register Now",
+                            " Signin",
                             style: TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.bold),
                           ),

@@ -1,13 +1,29 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/home_screen.dart';
+import '../constants/api_keys.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'presentation/themes/themes.dart';
-import 'presentation/screens/signin_screen.dart';
+import 'services/auth_changes.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: url,
+    anonKey: anonKey,
+    // authOptions: const FlutterAuthClientOptions(
+    //   authFlowType: AuthFlowType.pkce,
+    // ),
+    // realtimeClientOptions: const RealtimeClientOptions(
+    //   logLevel: RealtimeLogLevel.info,
+    // ),
+    // storageOptions: const StorageClientOptions(
+    //   retryAttempts: 10,
+    // ),
+  );
   runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,14 +31,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       scrollBehavior: MyCustomScrollBehavior(),
-      title: 'Project Management',
+      title: 'Kraken',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: whiteBG,
         useMaterial3: true,
       ),
-      home: const SignInScreen(),
-      // home: const HomeScreen(),
+      home: const AuthChanges(),
     );
   }
 }
