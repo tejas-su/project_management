@@ -36,7 +36,7 @@ class _HomeContentState extends State<HomeContent> {
               border:
                   Border(right: BorderSide(width: 3, color: whiteContainer))),
           child: ListView.builder(
-            itemCount: 6,
+            itemCount: 1,
             itemBuilder: (context, index) => Padding(
               padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
               child: ListTile(

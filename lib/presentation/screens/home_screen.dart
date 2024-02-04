@@ -4,7 +4,7 @@ import '../screens/add_new_screen.dart';
 import '../screens/home_content.dart';
 import '../screens/projects_screen.dart';
 import '../screens/search_screen.dart';
-import '../screens/users_scree.dart';
+import 'users_screen.dart';
 import '../themes/themes.dart';
 
 class HomeScreen extends StatefulWidget {

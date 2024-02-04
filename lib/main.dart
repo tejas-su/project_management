@@ -1,25 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../constants/api_keys.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'presentation/themes/themes.dart';
 import 'services/auth_changes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: url,
-    anonKey: anonKey,
-    // authOptions: const FlutterAuthClientOptions(
-    //   authFlowType: AuthFlowType.pkce,
-    // ),
-    // realtimeClientOptions: const RealtimeClientOptions(
-    //   logLevel: RealtimeLogLevel.info,
-    // ),
-    // storageOptions: const StorageClientOptions(
-    //   retryAttempts: 10,
-    // ),
-  );
+  // await Supabase.initialize(
+  //   url: url,
+  //   anonKey: anonKey,
+
+  // );
   runApp(const MyApp());
 }
 

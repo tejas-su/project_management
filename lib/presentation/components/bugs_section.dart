@@ -10,7 +10,7 @@ class BugsSection extends StatelessWidget {
     return Scaffold(
       body: ListView.builder(
         itemBuilder: (context, index) => const ListTile(
-          title: Text('Comments sections'),
+          title: Text('Bugs sections'),
           subtitle: Text(
             'Comments section is yet to be developed',
             style: TextStyle(fontSize: 12),
