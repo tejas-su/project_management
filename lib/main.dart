@@ -1,16 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'constants/api_keys.dart';
 import 'presentation/themes/themes.dart';
 import 'services/auth_changes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Supabase.initialize(
-  //   url: url,
-  //   anonKey: anonKey,
-
-  // );
+  await Supabase.initialize(
+    url: url,
+    anonKey: anonKey,
+  );
+  final response =
+      await Supabase.instance.client.from('users').select().select();
+  print(response);
   runApp(const MyApp());
 }
 
@@ -18,6 +21,7 @@ final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
