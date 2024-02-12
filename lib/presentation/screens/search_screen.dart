@@ -32,16 +32,15 @@ class _SearchScreenState extends State<SearchScreen>
               Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
-                //borderOnForeground: mounted,
                 color: whiteBG,
                 child: TabBar(
+                    dividerColor: Colors.transparent,
                     indicatorSize: TabBarIndicatorSize.tab,
                     unselectedLabelColor: Colors.grey,
                     labelColor: Colors.black,
                     labelPadding: const EdgeInsets.symmetric(horizontal: 24),
-                    automaticIndicatorColorAdjustment: true,
                     tabAlignment: TabAlignment.center,
-                    //splashBorderRadius: BorderRadius.circular(100),
+                    splashBorderRadius: BorderRadius.circular(16),
                     indicator: BoxDecoration(
                         color: whiteContainer,
                         borderRadius: BorderRadius.circular(16)),
@@ -53,8 +52,7 @@ class _SearchScreenState extends State<SearchScreen>
                       ),
                       Text("Project without Bugs",
                           style: TextStyle(fontSize: 25)),
-                      Text("Projects with Bugs",
-                          style: TextStyle(fontSize: 25))
+                      Text("Projects with Bugs", style: TextStyle(fontSize: 25))
                     ]),
               ),
               Expanded(
@@ -221,65 +219,61 @@ class _SearchScreenState extends State<SearchScreen>
 
         //!Description
         SizedBox(
-          width: 700,
+            width: 700,
             child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: whiteContainer,
-              ),
-              child: Column(children: [
-                Card(
-                  margin: EdgeInsets.all(25),
-                  color: whiteContainer,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          
-                          leading: CircleAvatar(
-                            // maxRadius: 100,
-                            
-                        
-                            // foregroundImage: AssetImage('assets/avatars/man (1).png'),
-                           
-                            
-                           
-                            child: Image.asset(
-                              "assets/avatars/man (1).png",
-                             
-                              // fit: BoxFit.cover,
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: whiteContainer,
+                  ),
+                  child: Column(children: [
+                    Card(
+                      margin: const EdgeInsets.all(25),
+                      color: whiteContainer,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              leading: CircleAvatar(
+                                // maxRadius: 100,
+
+                                // foregroundImage: AssetImage('assets/avatars/man (1).png'),
+
+                                child: Image.asset(
+                                  "assets/avatars/man (1).png",
+
+                                  // fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: const Text(
+                                "Abhay B Prabhu",
+                                style: TextStyle(fontSize: 25),
+                              ),
+                              subtitle: const Text("team_lead"),
                             ),
-                          ),
-                          title: Text(
-                            "Abhay B Prabhu",
-                            style: TextStyle(fontSize: 25),
-                          ),
-                          subtitle: Text("team_lead"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: SizedBox(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Team : Kraken"),
-                                Text("Project: Lady_Bug"),
-                                Text("Bug : Error in Logics"),
-                                Text("Bug Description:"),
-                                Text(
-                                    "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description")
-                              ],
+                            const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Team : Kraken"),
+                                    Text("Project: Lady_Bug"),
+                                    Text("Bug : Error in Logics"),
+                                    Text("Bug Description:"),
+                                    Text(
+                                        "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description")
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ]),
-                ),
-              ])),
-        ))
+                          ]),
+                    ),
+                  ])),
+            ))
       ],
     );
   }
