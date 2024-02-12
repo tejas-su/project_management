@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
-//import 'package:project_management/presentation/widgets/cta_button.dart';
-
->>>>>>> c50ba41f55f31edf1a112ee9299ee5d126e39be8
 import '../components/bugs_section.dart';
 import '../themes/themes.dart';
 
