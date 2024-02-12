@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/components/searchField_section.dart';
 import 'package:project_management/presentation/themes/themes.dart';
+import '../widgets/search_field.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -28,7 +28,7 @@ class _SearchScreenState extends State<SearchScreen>
           decoration: const BoxDecoration(color: whiteBG),
           child: Column(
             children: [
-              const searchField(),
+              const SearchField(),
               Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),

@@ -4,6 +4,7 @@ import '../screens/add_new_screen.dart';
 import '../screens/home_content.dart';
 import '../screens/projects_screen.dart';
 import '../screens/search_screen.dart';
+import 'loading_screen.dart';
 import 'users_screen.dart';
 import '../themes/themes.dart';
 
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     UsersScreen(),
     ProjectsScreen(),
     SearchScreen(),
-    AddNewScreen()
+    AddNewScreen(),
   ];
 
   @override
@@ -39,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: const Border(bottom: BorderSide(width: 2, color: whiteBG)),
         backgroundColor: whiteContainer,
         title: Text(
-          'Kraken',
-          style: GoogleFonts.libreFranklin(
+          'Shrine',
+          style: GoogleFonts.dmSerifDisplay(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
@@ -48,6 +49,17 @@ class _HomeScreenState extends State<HomeScreen> {
         titleSpacing: 25,
         automaticallyImplyLeading: false,
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const LoadingScreen(),
+                ));
+              },
+              icon: const Icon(
+                Icons.refresh,
+                color: black,
+              )),
           Padding(
             padding: const EdgeInsets.only(right: 25.0),
             child: IconButton(
@@ -67,6 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
             //Navigation Rail
             //
             NavigationRail(
+              selectedIndex: selectedIndex,
+              leading: const CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  foregroundImage: AssetImage('images/building.png')),
               indicatorColor: black,
               selectedIconTheme: const IconThemeData(color: whiteBG),
               indicatorShape: const RoundedRectangleBorder(
@@ -86,9 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 NavigationRailDestination(
                     icon: Icon(Icons.add_rounded), label: Text('Add projects')),
               ],
-              selectedIndex: selectedIndex,
-              leading: const CircleAvatar(
-                  foregroundImage: AssetImage('avatars/man.png')),
             ),
             screens[selectedIndex],
           ],
