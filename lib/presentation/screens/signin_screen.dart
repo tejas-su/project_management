@@ -4,7 +4,6 @@ import 'package:lottie/lottie.dart';
 import '../widgets/cta_button.dart';
 import '../widgets/text_field.dart';
 import '../themes/themes.dart';
-import 'home_screen.dart';
 import 'loading_screen.dart';
 
 class SignInScreen extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:project_management/presentation/screens/mobile_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'presentation/themes/themes.dart';
 import 'services/auth_changes.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return MaterialApp(
       scrollBehavior: MyCustomScrollBehavior(),
       title: 'Shrine',
@@ -31,7 +33,15 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: whiteBG,
         useMaterial3: true,
       ),
-      home: const AuthChanges(),
+      home: LayoutBuilder(
+        builder: (context, constraints) {
+          if (width > 1260) {
+            return const AuthChanges();
+          } else {
+            return const MobileScreen();
+          }
+        },
+      ),
     );
   }
 }
