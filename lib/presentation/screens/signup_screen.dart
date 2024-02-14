@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:project_management/presentation/screens/home_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/cta_button.dart';
 import '../widgets/text_field.dart';
 import '../themes/themes.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   final Function()? onTap;
-  const SignUpScreen({super.key, required this.onTap});
+  final SupabaseClient supabase;
+  const SignUpScreen({super.key, required this.onTap, required this.supabase});
 
   @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  @override
   Widget build(BuildContext context) {
+    Future<void> registerUser() async {
+      try {
+        final AuthResponse res = await widget.supabase.auth.signUp(
+          email: 'test@example.com',
+          password: 'test123',
+        );
+        print(res);
+      } catch (e) {
+        print(e);
+      }
+    }
+
     //user controller
     TextEditingController userController = TextEditingController();
     //group controller
@@ -102,10 +120,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       CTAButton(
                         text: 'Register',
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        )),
+                        onTap: registerUser,
                         left: 100,
                         right: 100,
                       ),
@@ -120,7 +135,7 @@ class SignUpScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 10),
                           ),
                           GestureDetector(
-                            onTap: onTap,
+                            onTap: widget.onTap,
                             child: const Text(
                               "Sign in",
                               style: TextStyle(
