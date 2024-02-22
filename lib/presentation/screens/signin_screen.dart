@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,17 +50,11 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           );
         } else {
-          //signup the user if all the parameters are proper
           widget.supabase.auth.signInWithPassword(
             email: emailController.text,
             password: passwordController.text,
           );
-          //Save  session token
-          // Map<String, dynamic> data = json.decode('$response');
-          // final accessToken = data["access_token"];
-          // print('access toke: $accessToken');
-          // await storage.write(key: 'authToken', value: accessToken);
-          //show loading screen and goto home screen
+
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => LoadingScreen(
               supabase: widget.supabase,
