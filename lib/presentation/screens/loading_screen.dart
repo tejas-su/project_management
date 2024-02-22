@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
+  final SupabaseClient supabase;
+  const LoadingScreen({super.key, required this.supabase});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -17,7 +19,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                    supabase: widget.supabase,
+                  )));
       // Navigator.pop(context);
     });
   }

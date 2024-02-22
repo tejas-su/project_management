@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_management/services/auth_changes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../screens/add_new_screen.dart';
 import '../screens/home_content.dart';
 import '../screens/projects_screen.dart';
@@ -9,7 +11,8 @@ import 'users_screen.dart';
 import '../themes/themes.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final SupabaseClient supabase;
+  const HomeScreen({super.key, required this.supabase});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  void signOutUser() async {
+    await widget.supabase.auth.signOut();
   }
 
   //List of screens
@@ -53,17 +60,27 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const LoadingScreen(),
+                  builder: (context) => LoadingScreen(
+                    supabase: widget.supabase,
+                  ),
                 ));
               },
               icon: const Icon(
                 Icons.refresh,
                 color: black,
               )),
+          //Sign out button
           Padding(
             padding: const EdgeInsets.only(right: 25.0),
             child: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  signOutUser();
+                  //move back to the auth changes
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) =>
+                        AuthChanges(supabase: widget.supabase),
+                  ));
+                },
                 icon: const Icon(
                   Icons.exit_to_app_rounded,
                   color: black,

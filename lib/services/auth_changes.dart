@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_management/presentation/screens/home_screen.dart';
 import 'package:project_management/presentation/screens/signin_screen.dart';
 import 'package:project_management/presentation/screens/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,11 +24,18 @@ class _LoginOrSignUpState extends State<AuthChanges> {
 
   @override
   Widget build(BuildContext context) {
-    if (showLoginPage) {
-      return SignInScreen(onTap: switchScreens);
+    final Session? session = widget.supabase.auth.currentSession;
+    if (session == null) {
+      if (showLoginPage) {
+        return SignInScreen(onTap: switchScreens, supabase: widget.supabase);
+      } else {
+        return SignUpScreen(
+          onTap: switchScreens,
+          supabase: widget.supabase,
+        );
+      }
     } else {
-      return SignUpScreen(
-        onTap: switchScreens,
+      return HomeScreen(
         supabase: widget.supabase,
       );
     }

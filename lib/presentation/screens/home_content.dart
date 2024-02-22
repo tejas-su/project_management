@@ -110,7 +110,7 @@ class _HomeContentState extends State<HomeContent> {
                     Border(right: BorderSide(width: 3, color: whiteContainer))),
             child: const BugsSection()),
         //
-        //priorities section
+        //comments section
         //
         Container(
           height: 800,

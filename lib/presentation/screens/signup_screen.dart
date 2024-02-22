@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -18,24 +20,73 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
-    Future<void> registerUser() async {
-      try {
-        final AuthResponse res = await widget.supabase.auth.signUp(
-          email: 'test@example.com',
-          password: 'test123',
-        );
-        print(res);
-      } catch (e) {
-        print(e);
-      }
-    }
-
     //user controller
     TextEditingController userController = TextEditingController();
     //group controller
     TextEditingController passwordController = TextEditingController();
     //password controller
     TextEditingController groupController = TextEditingController();
+    Future<void> registerUser() async {
+      try {
+        // check if the fields are empty or password is less than the mandatory length (7)
+        if (userController.text.isEmpty &&
+            passwordController.text.length < 7 &&
+            groupController.text.length < 7) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text(
+                  "Did you forget to fill in your password or email"),
+              content: const Text(
+                  "Please check your email and password.\nThe minimum password length is 7 characters long\nGroup name should be of minimum 5 characters long"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("Proceed"),
+                ),
+              ],
+            ),
+          );
+        } else {
+          //signup the user if all the parameters are proper
+          await widget.supabase.auth.signUp(
+            email: userController.text,
+            password: passwordController.text,
+          );
+          //show dialog box to the user
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("You'r all set"),
+              content:
+                  const Text("Head over to the sign in page to get started"),
+              actions: [
+                TextButton(
+                  onPressed: widget.onTap,
+                  child: const Text("Proceed"),
+                ),
+              ],
+            ),
+          );
+        }
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Oops Something went wrong"),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Proceed"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       body: Center(
         child: Row(
