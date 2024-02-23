@@ -4,12 +4,27 @@ import '../themes/themes.dart';
 class InputTextField extends StatelessWidget {
   final TextEditingController? controller;
   final IconButton? suffixIcon;
+
+  ///Bottom Padding
   final double bottom;
+
+  ///Padding left
   final double left;
+
+  ///Padding Right
   final double right;
+
+  ///Hint text
   final String hintText;
+
+  ///Hide Password
   final bool obscureText;
+
+  ///Color of the text field
   final Color? color;
+
+  ///max Lines for the text
+  final int maxLines;
   const InputTextField(
       {super.key,
       this.controller,
@@ -19,6 +34,7 @@ class InputTextField extends StatelessWidget {
       required this.hintText,
       this.suffixIcon,
       this.color = whiteBG,
+      this.maxLines = 1,
       this.obscureText = false});
 
   @override
@@ -30,10 +46,12 @@ class InputTextField extends StatelessWidget {
             color: color,
             borderRadius: const BorderRadius.all(Radius.circular(10))),
         child: TextField(
+          maxLines: maxLines,
           controller: controller,
           showCursor: true,
           obscureText: obscureText,
           decoration: InputDecoration(
+              label: Text(hintText),
               suffixIcon: suffixIcon,
               hintText: hintText,
               border: const OutlineInputBorder(borderSide: BorderSide.none)),

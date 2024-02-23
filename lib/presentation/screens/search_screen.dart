@@ -68,6 +68,7 @@ class _SearchScreenState extends State<SearchScreen>
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           return Card(
+                            elevation: 0.5,
                             margin: const EdgeInsets.all(16),
                             color: whiteContainer,
                             child: Column(
@@ -103,20 +104,18 @@ class _SearchScreenState extends State<SearchScreen>
                           );
                         }),
                   ),
-                  //!Projects without Bugs screen
+                  //Projects without Bugs screen
                   SizedBox(
                     child: GridView.builder(
                         itemCount: 5,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
-                          //crossAxisSpacing: 25,
-                          //mainAxisSpacing: 25,
-                          //mainAxisExtent: 200
                         ),
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           return Card(
+                            elevation: 0,
                             margin: const EdgeInsets.all(25),
                             color: whiteContainer,
                             child: Column(
