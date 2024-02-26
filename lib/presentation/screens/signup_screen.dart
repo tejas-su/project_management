@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:project_management/presentation/screens/home_content.dart';
+import 'package:project_management/presentation/screens/loading_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/cta_button.dart';
 import '../widgets/text_field.dart';
@@ -21,71 +23,100 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     //user controller
-    TextEditingController userController = TextEditingController();
+    TextEditingController groupEmailController = TextEditingController();
     //group controller
-    TextEditingController passwordController = TextEditingController();
+    TextEditingController groupPasswordController = TextEditingController();
     //password controller
-    TextEditingController groupController = TextEditingController();
-    Future<void> registerUser() async {
-      try {
-        // check if the fields are empty or password is less than the mandatory length (7)
-        if (userController.text.isEmpty &&
-            passwordController.text.length < 7 &&
-            groupController.text.length < 7) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text(
-                  "Did you forget to fill in your password or email"),
-              content: const Text(
-                  "Please check your email and password.\nThe minimum password length is 7 characters long\nGroup name should be of minimum 5 characters long"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Proceed"),
-                ),
-              ],
-            ),
-          );
-        } else {
-          //signup the user if all the parameters are proper
-          await widget.supabase.auth.signUp(
-            email: userController.text,
-            password: passwordController.text,
-          );
-          //show dialog box to the user
+    TextEditingController groupNameController = TextEditingController();
 
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("You'r all set"),
-              content:
-                  const Text("Head over to the sign in page to get started"),
-              actions: [
-                TextButton(
-                  onPressed: widget.onTap,
-                  child: const Text("Proceed"),
-                ),
-              ],
+    //Show success dialog to the user if everything goes properly
+    void _showDialog(BuildContext context, String message) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Success 🥳"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
             ),
-          );
-        }
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Oops Something went wrong"),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Proceed"),
-              ),
-            ],
-          ),
-        );
+          ],
+        ),
+      );
+    }
+
+    //show error message to the user if something goes wrong
+    void _showErrorDialog(BuildContext context, String message) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Oops, something went wrong"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    //create a new team in the database
+    Future<void> insertUserData() async {
+      try {
+        final response = await widget.supabase.from('team').upsert([
+          {
+            'team_name': groupNameController.text,
+            'team_email': groupEmailController.text,
+            'team_password': groupPasswordController.text,
+          }
+        ]);
+        print('Table insertion response\n\n $response');
+      } catch (error) {
+        _showErrorDialog(context,
+            'Oops, Something went wrong while creating your team./n This was the error message: $error');
       }
     }
+
+    //register the user
+    Future<void> registerUser() async {
+      if (groupEmailController.text.isEmpty ||
+          groupPasswordController.text.length < 7 ||
+          groupNameController.text.length < 5) {
+        _showErrorDialog(context,
+            "Please fill in all fields and use a password with at least 7 characters and a group name with at least 5 characters.");
+        return;
+      }
+
+      try {
+        final session = await widget.supabase.auth.signUp(
+          email: groupEmailController.text,
+          password: groupPasswordController.text,
+        );
+
+        // ignore: unnecessary_null_comparison
+        if (session == null) {
+          _showErrorDialog(context, "An error occurred during registration.");
+        } else {
+          //upsert data to the table
+          insertUserData();
+          // Successful registration, show success message and switch to sign-in
+
+          LoadingScreen(
+            screen: const HomeContent(),
+            supabase: widget.supabase,
+          );
+          _showDialog(context, "Registration successful!");
+          widget.onTap?.call();
+        }
+      } catch (error) {
+        _showErrorDialog(context, "An unexpected error occurred.");
+      }
+    }
+
+    // add the team details to the public table teams in supabase
 
     return Scaffold(
       body: Center(
@@ -143,8 +174,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20,
                       ),
                       InputTextField(
-                        controller: userController,
-                        hintText: 'Username or Email',
+                        controller: groupEmailController,
+                        hintText: 'Group Email',
                         left: 100,
                         right: 100,
                       ),
@@ -152,8 +183,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20,
                       ),
                       InputTextField(
-                        controller: groupController,
-                        hintText: 'Group ID or Group Name',
+                        controller: groupNameController,
+                        hintText: 'Group Name',
                         left: 100,
                         right: 100,
                       ),
@@ -161,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20,
                       ),
                       InputTextField(
-                          controller: passwordController,
+                          controller: groupPasswordController,
                           left: 100,
                           right: 100,
                           hintText: 'Password',

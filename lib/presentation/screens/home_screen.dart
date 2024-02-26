@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_management/presentation/widgets/cta_button.dart';
 import 'package:project_management/services/auth_changes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../screens/add_new_screen.dart';
@@ -56,11 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
         titleSpacing: 25,
         automaticallyImplyLeading: false,
         actions: [
+          //refresh button
           IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => LoadingScreen(
+                    screen: HomeScreen(
+                      supabase: widget.supabase,
+                    ),
                     supabase: widget.supabase,
                   ),
                 ));
@@ -76,9 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   signOutUser();
                   //move back to the auth changes
+                  print('Signed out sucessfully');
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        AuthChanges(supabase: widget.supabase),
+                    builder: (context) => AuthChanges(
+                      supabase: widget.supabase,
+                    ),
                   ));
                 },
                 icon: const Icon(

@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/cta_button.dart';
 import '../widgets/text_field.dart';
 import '../themes/themes.dart';
+import 'home_screen.dart';
 import 'loading_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -26,55 +27,51 @@ class _SignInScreenState extends State<SignInScreen> {
     TextEditingController groupController = TextEditingController();
     //password controller
     TextEditingController passwordController = TextEditingController();
-    //signin a user function
-    Future<void> signInUser() async {
-      try {
-        // check if the fields are empty or password is less than the mandatory length (7)
-        if (emailController.text.isEmpty &&
-            passwordController.text.isEmpty &&
-            groupController.text.length < 7) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("Did you forget to fill in the details"),
-              content: const Text(
-                  "Please check that you typed in your email, Group ID and password correctly"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Proceed"),
-                ),
-              ],
+    void showErrorDialog(BuildContext context, String message) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Oops, something went wrong"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
             ),
-          );
-        } else {
-          widget.supabase.auth.signInWithPassword(
-            email: emailController.text,
-            password: passwordController.text,
-          );
+          ],
+        ),
+      );
+    }
 
+    Future<void> signInUser() async {
+      if (emailController.text.isEmpty ||
+          passwordController.text.isEmpty ||
+          groupController.text.length < 7) {
+        showErrorDialog(context,
+            "Please fill in all fields and use a password with at least 7 characters.");
+        return;
+      }
+
+      try {
+        final session = await widget.supabase.auth.signInWithPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        if (session == null) {
+          showErrorDialog(context, "Invalid email or password.");
+        } else {
+          // Successful sign-in, navigate to home screen
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => LoadingScreen(
+              screen: HomeScreen(supabase: widget.supabase),
               supabase: widget.supabase,
             ),
           ));
         }
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Oops Something went wrong"),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Proceed"),
-              ),
-            ],
-          ),
-        );
+      } catch (error) {
+        showErrorDialog(context, "An unexpected error occurred.");
       }
-      dispose();
     }
 
     return Scaffold(
@@ -135,7 +132,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       InputTextField(
                         controller: emailController,
-                        hintText: 'Email',
+                        hintText: 'Group Email',
                         left: 100,
                         right: 100,
                       ),
@@ -144,7 +141,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       InputTextField(
                         controller: groupController,
-                        hintText: 'Group ID or Group Name',
+                        hintText: 'Group Name',
                         left: 100,
                         right: 100,
                       ),

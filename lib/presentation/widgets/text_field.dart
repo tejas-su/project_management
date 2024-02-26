@@ -51,6 +51,7 @@ class InputTextField extends StatelessWidget {
           showCursor: true,
           obscureText: obscureText,
           decoration: InputDecoration(
+              labelStyle: const TextStyle(color: black),
               label: Text(hintText),
               suffixIcon: suffixIcon,
               hintText: hintText,
