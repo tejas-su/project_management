@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project_management/presentation/widgets/cta_button.dart';
 import 'package:project_management/services/auth_changes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../screens/add_new_screen.dart';
