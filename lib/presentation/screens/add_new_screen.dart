@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project_management/presentation/components/project_section.dart';
+import 'package:project_management/presentation/widgets/search_field.dart';
+import 'package:project_management/presentation/widgets/text_field.dart';
 import '../components/bugs_section.dart';
 import '../themes/themes.dart';
 
@@ -7,91 +10,97 @@ class AddNewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool selected = false;
-    //on tap of list tile event handler
-
-    return Row(children: [
-      //
-      //Projects section
-      //
-      Container(
-        height: 800,
-        width: 350,
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            border: Border(right: BorderSide(width: 3, color: whiteContainer))),
-        child: ListView(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
-            child: ListTile(
-              shape: const BeveledRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              focusColor: whiteContainer,
-              hoverColor: whiteContainer,
-              autofocus: true,
-              selected: selected,
-              selectedColor: black,
-              selectedTileColor: whiteContainer,
-              onTap: null,
-              enabled: true,
-              tileColor: whiteBG,
-              leading: const CircleAvatar(
-                  foregroundImage: AssetImage('avatars/man.png')),
-              title: const Text('Kraken'),
-              subtitle: const Text(
-                'A simple project management tool',
-                style: TextStyle(fontSize: 12),
-              ),
-              trailing: const IconButton(
-                  onPressed: null,
-                  icon: Icon(
-                    Icons.edit_rounded,
-                    size: 20,
-                    color: black,
-                  )),
-              horizontalTitleGap: 10,
-            ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 0, left: 30, right: 30, bottom: 30),
+      child: SingleChildScrollView(
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            alignment: Alignment.topLeft,
+            width: 1360,
+            child: const Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 32, left: 32, bottom: 32),
+                    child: Text(
+                      "User Details",
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  InputTextField(
+                    hintText: 'Enter User Name',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 700,
+                  ),
+                  InputTextField(
+                    hintText: 'Enter User Email',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 700,
+                  ),
+                  InputTextField(
+                    hintText: 'Enter User Designation',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 700,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 32, left: 32, bottom: 32),
+                    child: Text(
+                      "Project Details",
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  InputTextField(
+                    hintText: 'Enter Project Name',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 700,
+                  ),
+                  InputTextField(
+                    hintText: 'Enter Project Description',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 200,
+                    maxLines: 10,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 32.0),
+                    child: Text(
+                      "Bug Details",
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  InputTextField(
+                    hintText: 'Enter Bug Title',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 700,
+                  ),
+                  InputTextField(
+                    hintText: 'Enter Bug Description',
+                    color: whiteContainer,
+                    bottom: 32,
+                    left: 32,
+                    right: 200,
+                    maxLines: 10,
+                  ),
+                ]),
           ),
-        ]),
-      ),
-      //
-      //Users Section
-      //
-      Container(
-        height: 800,
-        width: 350,
-        padding: const EdgeInsets.only(top: 10),
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            border: Border(right: BorderSide(width: 3, color: whiteContainer))),
-        child: ListView.builder(
-          itemBuilder: (context, index) => const ListTile(
-            leading:
-                CircleAvatar(foregroundImage: AssetImage('avatars/man.png')),
-            title: Text('tejas.s.u_'),
-            subtitle: Text(
-              'tejas_s.u@yahoo.com',
-              style: TextStyle(fontSize: 12),
-            ),
-            horizontalTitleGap: 10,
-          ),
-          itemCount: 3,
         ),
       ),
-      //
-      //bugs section
-      //
-      Container(
-        height: 800,
-        width: 750,
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            border: Border(right: BorderSide(width: 3, color: whiteContainer))),
-        child: const BugsSection(),
-      )
-    ]);
+    );
   }
 }

@@ -29,32 +29,27 @@ class _SearchScreenState extends State<SearchScreen>
           child: Column(
             children: [
               const SearchField(),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-                color: whiteBG,
-                child: TabBar(
-                    dividerColor: Colors.transparent,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    unselectedLabelColor: Colors.grey,
-                    labelColor: Colors.black,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 24),
-                    tabAlignment: TabAlignment.center,
-                    splashBorderRadius: BorderRadius.circular(16),
-                    indicator: BoxDecoration(
-                        color: whiteContainer,
-                        borderRadius: BorderRadius.circular(16)),
-                    controller: tabcontroller,
-                    tabs: const [
-                      Text(
-                        "Users",
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Text("Project without Bugs",
-                          style: TextStyle(fontSize: 25)),
-                      Text("Projects with Bugs", style: TextStyle(fontSize: 25))
-                    ]),
-              ),
+              TabBar(
+                  dividerColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  unselectedLabelColor: Colors.grey,
+                  labelColor: Colors.black,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  tabAlignment: TabAlignment.center,
+                  splashBorderRadius: BorderRadius.circular(16),
+                  indicator: BoxDecoration(
+                      color: whiteContainer,
+                      borderRadius: BorderRadius.circular(12)),
+                  controller: tabcontroller,
+                  tabs: const [
+                    Text(
+                      "Users",
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Text("Project without Bugs",
+                        style: TextStyle(fontSize: 25)),
+                    Text("Projects with Bugs", style: TextStyle(fontSize: 25))
+                  ]),
               Expanded(
                 child: TabBarView(controller: tabcontroller, children: [
                   //!Users screen
@@ -67,8 +62,7 @@ class _SearchScreenState extends State<SearchScreen>
                         ),
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
-                          return Card(
-                            elevation: 0.5,
+                          return Container(
                             margin: const EdgeInsets.all(16),
                             color: whiteContainer,
                             child: Column(
@@ -114,8 +108,7 @@ class _SearchScreenState extends State<SearchScreen>
                         ),
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
-                          return Card(
-                            elevation: 0,
+                          return Container(
                             margin: const EdgeInsets.all(25),
                             color: whiteContainer,
                             child: Column(
@@ -166,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen>
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           return Expanded(
-                            child: Card(
+                            child: Container(
                               margin: const EdgeInsets.all(25),
                               color: whiteContainer,
                               child: Column(
@@ -217,62 +210,51 @@ class _SearchScreenState extends State<SearchScreen>
         ),
 
         //!Description
-        SizedBox(
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
             width: 700,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: whiteContainer,
-                  ),
-                  child: Column(children: [
-                    Card(
-                      margin: const EdgeInsets.all(25),
-                      color: whiteContainer,
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              leading: CircleAvatar(
-                                // maxRadius: 100,
-
-                                // foregroundImage: AssetImage('assets/avatars/man (1).png'),
-
-                                child: Image.asset(
-                                  "assets/avatars/man (1).png",
-
-                                  // fit: BoxFit.cover,
-                                ),
-                              ),
-                              title: const Text(
-                                "Abhay B Prabhu",
-                                style: TextStyle(fontSize: 25),
-                              ),
-                              subtitle: const Text("team_lead"),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: SizedBox(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Team : Kraken"),
-                                    Text("Project: Lady_Bug"),
-                                    Text("Bug : Error in Logics"),
-                                    Text("Bug Description:"),
-                                    Text(
-                                        "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description")
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ])),
-            ))
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: whiteContainer,
+              ),
+              child: Column(children: [
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          child: Image.asset(
+                            "assets/avatars/man (1).png",
+                          ),
+                        ),
+                        title: const Text(
+                          "Abhay B Prabhu",
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        subtitle: const Text("team_lead"),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: SizedBox(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Team : Kraken"),
+                              Text("Project: Lady_Bug"),
+                              Text("Bug : Error in Logics"),
+                              Text("Bug Description:"),
+                              Text(
+                                  "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description")
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]),
+              ])),
+        )
       ],
     );
   }
