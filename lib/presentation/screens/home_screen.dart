@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:project_management/services/auth_changes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../screens/add_new_screen.dart';
-import '../screens/home_content.dart';
-import '../screens/projects_screen.dart';
-import '../screens/search_screen.dart';
-import 'loading_screen.dart';
-import 'users_screen.dart';
-import '../themes/themes.dart';
+import 'imports.dart';
 
 class HomeScreen extends StatefulWidget {
   final SupabaseClient supabase;
-  const HomeScreen({super.key, required this.supabase});
+
+  const HomeScreen({
+    super.key,
+    required this.supabase,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+
   //function for updating the index of the navigation rail
   void onDestinationSelected(int index) {
     setState(() {
@@ -31,17 +28,21 @@ class _HomeScreenState extends State<HomeScreen> {
     await widget.supabase.auth.signOut();
   }
 
-  //List of screens
-  List screens = const [
-    HomeContent(),
-    UsersScreen(),
-    ProjectsScreen(),
-    SearchScreen(),
-    AddNewScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    //retrieve the group name from the local storage
+    // final Storage localStorage = window.localStorage;
+    // String? groupName = localStorage['groupName'].toString();
+    //List of screens
+    List screens = [
+      HomeContent(
+        supabase: widget.supabase,
+      ),
+      const UsersScreen(),
+      const ProjectsScreen(),
+      const SearchScreen(),
+      const AddNewScreen(),
+    ];
     return Scaffold(
       appBar: AppBar(
         shape: const Border(bottom: BorderSide(width: 2, color: whiteBG)),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../components/bugs_section.dart';
-import '../components/comments_section.dart';
-import '../themes/themes.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'imports.dart';
 
 class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
+  final SupabaseClient supabase;
+  const HomeContent({super.key, required this.supabase});
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -20,8 +19,10 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
+  final obj = HelperFunctions();
   @override
   Widget build(BuildContext context) {
+    obj.getProjects(context, widget.supabase);
     return Row(
       children: [
         //

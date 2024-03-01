@@ -1,14 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
-import 'package:project_management/presentation/screens/home_content.dart';
-import 'package:project_management/presentation/screens/loading_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../widgets/cta_button.dart';
-import '../widgets/text_field.dart';
-import '../themes/themes.dart';
+import 'imports.dart';
 
 class SignUpScreen extends StatefulWidget {
   final Function()? onTap;
@@ -28,6 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     TextEditingController groupPasswordController = TextEditingController();
     //password controller
     TextEditingController groupNameController = TextEditingController();
+    //save the group name in the local storage of the web
+    final Storage _localStorage = window.localStorage;
 
     //Show success dialog to the user if everything goes properly
     void _showDialog(BuildContext context, String message) {
@@ -102,10 +97,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         } else {
           //upsert data to the table
           insertUserData();
+          //save the group name in local storage
+          _localStorage['groupName'] = groupNameController.text;
           // Successful registration, show success message and switch to sign-in
 
           LoadingScreen(
-            screen: const HomeContent(),
+            screen: HomeContent(supabase: widget.supabase),
             supabase: widget.supabase,
           );
           _showDialog(context, "Registration successful!");

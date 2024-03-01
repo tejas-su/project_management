@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/components/project_section.dart';
-import 'package:project_management/presentation/widgets/search_field.dart';
 import 'package:project_management/presentation/widgets/text_field.dart';
-import '../components/bugs_section.dart';
 import '../themes/themes.dart';
 
 class AddNewScreen extends StatelessWidget {

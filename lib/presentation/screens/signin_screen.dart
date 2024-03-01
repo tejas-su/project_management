@@ -1,13 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../widgets/cta_button.dart';
-import '../widgets/text_field.dart';
-import '../themes/themes.dart';
 import 'home_screen.dart';
-import 'loading_screen.dart';
+import 'imports.dart';
 
 class SignInScreen extends StatefulWidget {
   final Function()? onTap;
@@ -27,6 +22,9 @@ class _SignInScreenState extends State<SignInScreen> {
     TextEditingController groupController = TextEditingController();
     //password controller
     TextEditingController passwordController = TextEditingController();
+    // save the group name in the web cache
+    final Storage localStorage = window.localStorage;
+
     void showErrorDialog(BuildContext context, String message) {
       showDialog(
         context: context,
@@ -46,7 +44,7 @@ class _SignInScreenState extends State<SignInScreen> {
     Future<void> signInUser() async {
       if (emailController.text.isEmpty ||
           passwordController.text.isEmpty ||
-          groupController.text.length < 7) {
+          groupController.text.length < 5) {
         showErrorDialog(context,
             "Please fill in all fields and use a password with at least 7 characters.");
         return;
@@ -57,6 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
           email: emailController.text,
           password: passwordController.text,
         );
+        localStorage['groupName'] = groupController.text;
 
         if (session == null) {
           showErrorDialog(context, "Invalid email or password.");
