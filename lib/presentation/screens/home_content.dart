@@ -124,19 +124,6 @@ class _HomeContentState extends State<HomeContent> {
                 border:
                     Border(right: BorderSide(width: 3, color: whiteContainer))),
             child: const BugsSection()),
-        //
-        //comments section
-        //
-        // Container(
-        //   height: 800,
-        //   width: 400,
-        //   decoration: const BoxDecoration(
-        //       borderRadius: BorderRadius.only(
-        //           topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-        //       border:
-        //           Border(right: BorderSide(width: 3, color: whiteContainer))),
-        //   child: const CommentsSection(),
-        // )
       ],
     );
   }

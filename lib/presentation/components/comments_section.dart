@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../themes/themes.dart';
 import '../widgets/text_field.dart';
@@ -20,6 +22,15 @@ class _CommentsSectionState extends State<CommentsSection> {
     });
   }
 
+  //user images
+  List images = [
+    "assets/avatars/man (1).png",
+    "assets/avatars/man (2).png",
+    "assets/avatars/man (3).png",
+    "assets/avatars/man (4).png",
+    "assets/avatars/man (5).png",
+  ];
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -36,7 +47,9 @@ class _CommentsSectionState extends State<CommentsSection> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ListTile(
-                    leading: const Icon(Icons.send_rounded),
+                    leading: CircleAvatar(
+                        foregroundImage:
+                            AssetImage(images[Random().nextInt(5)])),
                     shape: const BeveledRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                     focusColor: whiteContainer,
