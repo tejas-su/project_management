@@ -18,6 +18,7 @@ void showErrorDialog(BuildContext context, String message) {
   );
 }
 
+//retrieve the group name from local storage
 final Storage localStorage = window.localStorage;
 var groupName = localStorage['groupName'];
 

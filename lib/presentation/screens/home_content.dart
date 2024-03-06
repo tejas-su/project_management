@@ -57,15 +57,29 @@ class _HomeContentState extends State<HomeContent> {
                 title: const Text('Kraken'),
                 subtitle: const Text(
                   'A simple project management tool',
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 10),
                 ),
-                trailing: const IconButton(
-                    onPressed: null,
-                    icon: Icon(
-                      Icons.edit_rounded,
-                      size: 20,
-                      color: black,
-                    )),
+                trailing: const SizedBox(
+                  width: 80,
+                  child: Row(
+                    children: [
+                      IconButton(
+                          onPressed: null,
+                          icon: Icon(
+                            Icons.edit_rounded,
+                            size: 20,
+                            color: black,
+                          )),
+                      IconButton(
+                          onPressed: null,
+                          icon: Icon(
+                            Icons.delete_rounded,
+                            size: 20,
+                            color: black,
+                          )),
+                    ],
+                  ),
+                ),
                 horizontalTitleGap: 10,
               ),
             ),
@@ -102,7 +116,7 @@ class _HomeContentState extends State<HomeContent> {
         //
         Container(
             height: 800,
-            width: 750,
+            width: 700,
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
@@ -113,16 +127,16 @@ class _HomeContentState extends State<HomeContent> {
         //
         //comments section
         //
-        Container(
-          height: 800,
-          width: 400,
-          decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-              border:
-                  Border(right: BorderSide(width: 3, color: whiteContainer))),
-          child: const CommentsSection(),
-        )
+        // Container(
+        //   height: 800,
+        //   width: 400,
+        //   decoration: const BoxDecoration(
+        //       borderRadius: BorderRadius.only(
+        //           topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+        //       border:
+        //           Border(right: BorderSide(width: 3, color: whiteContainer))),
+        //   child: const CommentsSection(),
+        // )
       ],
     );
   }

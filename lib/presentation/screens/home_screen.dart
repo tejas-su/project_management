@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeContent(
         supabase: widget.supabase,
       ),
+      const CommentsSection(),
       const UsersScreen(),
       const ProjectsScreen(),
       const SearchScreen(),
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //refresh button
           IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => LoadingScreen(
                     screen: HomeScreen(
@@ -116,6 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
               destinations: const [
                 NavigationRailDestination(
                     icon: Icon(Icons.home_rounded), label: Text('Home')),
+                NavigationRailDestination(
+                    icon: Icon(Icons.chat_bubble_rounded),
+                    label: Text('Comments')),
                 NavigationRailDestination(
                     icon: Icon(Icons.person_rounded), label: Text('Users')),
                 NavigationRailDestination(
