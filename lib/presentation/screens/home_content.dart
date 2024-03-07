@@ -22,7 +22,7 @@ class _HomeContentState extends State<HomeContent> {
   final obj = HelperFunctions();
   @override
   Widget build(BuildContext context) {
-    obj.getProjects(context, widget.supabase);
+    // obj.getProjects(context, widget.supabase);
     return Row(
       children: [
         //

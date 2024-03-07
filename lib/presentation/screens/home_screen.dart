@@ -42,7 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
       const UsersScreen(),
       const ProjectsScreen(),
       const SearchScreen(),
-      const AddNewScreen(),
+      AddNewScreen(
+        supabase: widget.supabase,
+      ),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
           //refresh button
           IconButton(
               onPressed: () {
-                // Navigator.of(context).pop();
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => LoadingScreen(
                     screen: HomeScreen(
