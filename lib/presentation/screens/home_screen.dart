@@ -65,12 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => LoadingScreen(
+                    text: 'Crunching your data, This might take some time 😴',
                     screen: HomeScreen(
                       supabase: widget.supabase,
                     ),
                     supabase: widget.supabase,
                   ),
-                ));
+                ),
+                );
               },
               icon: const Icon(
                 Icons.refresh,

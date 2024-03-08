@@ -5,12 +5,13 @@ import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoadingScreen extends StatefulWidget {
+  final String text;
   final SupabaseClient supabase;
 
   ///Pass in the screen which you want to diplay after the loding screen
   final Widget screen;
   const LoadingScreen(
-      {super.key, required this.supabase, required this.screen});
+      {super.key, required this.supabase, required this.screen, this.text=''});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -40,8 +41,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             const SizedBox(
               height: 50,
             ),
-            Text(
-              'Loading your data, this might take some time.',
+            Text(widget.text,
               style: GoogleFonts.dmSerifDisplay(
                   fontWeight: FontWeight.w500, fontSize: 25),
             )

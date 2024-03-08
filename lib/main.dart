@@ -17,7 +17,6 @@ void main() async {
     supabase: supabase,
   ));
 }
-
 class MyApp extends StatelessWidget {
   final SupabaseClient supabase;
   const MyApp({super.key, required this.supabase});
