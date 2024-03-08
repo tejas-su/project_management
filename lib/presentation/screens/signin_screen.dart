@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_screen.dart';
@@ -51,6 +51,13 @@ class _SignInScreenState extends State<SignInScreen> {
       }
 
       try {
+        showDialog(
+          context: context,
+          builder: (context) => Container(
+            color: whiteBG,
+            child: Center(child: Lottie.asset('lottie/ani1.json', height: 500)),
+          ),
+        );
         final session = await widget.supabase.auth.signInWithPassword(
           email: emailController.text,
           password: passwordController.text,
@@ -58,18 +65,17 @@ class _SignInScreenState extends State<SignInScreen> {
         localStorage['groupName'] = groupController.text;
 
         if (session == null) {
+          Navigator.of(context).pop();
           showErrorDialog(context, "Invalid email or password.");
         } else {
+          Navigator.of(context).pop();
           // Successful sign-in, navigate to home screen
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => LoadingScreen(
-              screen: HomeScreen(supabase: widget.supabase),
-              supabase: widget.supabase,
-            ),
+            builder: (context) => HomeScreen(supabase: widget.supabase),
           ));
         }
       } catch (error) {
-        showErrorDialog(context, "An unexpected error occurred.");
+        showErrorDialog(context, "An unexpected error occurred. \n $error");
       }
     }
 

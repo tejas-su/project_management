@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'home_screen.dart';
 import 'imports.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -61,14 +62,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     //create a new team in the database
     Future<void> insertUserData() async {
       try {
-        final response = await widget.supabase.from('team').upsert([
+        await widget.supabase.from('team').upsert([
           {
             'team_name': groupNameController.text,
             'team_email': groupEmailController.text,
             'team_password': groupPasswordController.text,
           }
         ]);
-        print('Table insertion response\n\n $response');
       } catch (error) {
         _showErrorDialog(context,
             'Oops, Something went wrong while creating your team./n This was the error message: $error');
@@ -86,6 +86,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       try {
+        showDialog(
+          context: context,
+          builder: (context) => Container(
+            color: whiteBG,
+            child: Center(child: Lottie.asset('lottie/ani1.json', height: 500)),
+          ),
+        );
         final session = await widget.supabase.auth.signUp(
           email: groupEmailController.text,
           password: groupPasswordController.text,
@@ -93,6 +100,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         // ignore: unnecessary_null_comparison
         if (session == null) {
+          Navigator.of(context).pop();
           _showErrorDialog(context, "An error occurred during registration.");
         } else {
           //upsert data to the table
@@ -100,12 +108,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           //save the group name in local storage
           _localStorage['groupName'] = groupNameController.text;
           // Successful registration, show success message and switch to sign-in
-
-          LoadingScreen(
-            screen: HomeContent(supabase: widget.supabase),
-            supabase: widget.supabase,
-          );
-          _showDialog(context, "Registration successful!");
+          Navigator.of(context).pop();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => HomeScreen(supabase: widget.supabase),
+          ));
+          _showDialog(context, "Registration successful 🥳");
           widget.onTap?.call();
         }
       } catch (error) {

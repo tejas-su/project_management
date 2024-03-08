@@ -21,6 +21,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
   );
 }
 
+//retrieve the group name from local storage
 final Storage localStorage = window.localStorage;
 var groupName = localStorage['groupName'];
 
