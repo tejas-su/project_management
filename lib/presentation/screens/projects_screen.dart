@@ -6,6 +6,6 @@ class ProjectsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(width: 1450, child: ProjectSection());
+    return const SizedBox(width: 1425, child: ProjectSection());
   }
 }

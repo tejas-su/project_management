@@ -1,16 +1,22 @@
-class projects {
+class project {
   int? projectid;
   String? projectName;
-  String? projectDes;
+  String? teamName;
+  String? projectDescription;
   String? dateCreated;
 
-  projects(
-      {this.projectid, this.projectName, this.projectDes, this.dateCreated});
+  project(
+      {this.projectid,
+      this.projectName,
+      this.teamName,
+      this.projectDescription,
+      this.dateCreated});
 
-  projects.fromJson(Map<String, dynamic> json) {
+  project.fromJson(Map<String, dynamic> json) {
     projectid = json['projectid'];
     projectName = json['project_name'];
-    projectDes = json['project_des'];
+    teamName = json['team_name'];
+    projectDescription = json['project_description'];
     dateCreated = json['date_created'];
   }
 
@@ -18,7 +24,8 @@ class projects {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['projectid'] = this.projectid;
     data['project_name'] = this.projectName;
-    data['project_des'] = this.projectDes;
+    data['team_name'] = this.teamName;
+    data['project_description'] = this.projectDescription;
     data['date_created'] = this.dateCreated;
     return data;
   }
