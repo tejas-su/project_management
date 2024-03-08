@@ -301,7 +301,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
                     onTap: saveProject,
                     left: 32,
                     right: width / 1.3,
-                  )
+                  ),
                 ]),
           ),
         ),
