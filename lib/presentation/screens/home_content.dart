@@ -31,6 +31,27 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
+  late String deletingproject = '';
+  
+
+ Future<dynamic> deleteproject(selectedproject) async {
+  try{
+    showDialog(
+        context: context,
+        builder: (context) => Container(),
+      );
+    await supabase
+      .from('projects')
+      .delete()
+      .eq('project_name', selectedproject);
+  }catch(e){
+    // showDialog(
+
+    // );
+  }
+    
+  }
+
   late String firstproject;
 
   @override
@@ -89,11 +110,11 @@ class _HomeContentState extends State<HomeContent> {
                               '${projects.projectDescription}',
                               style: const TextStyle(fontSize: 12),
                             ),
-                            trailing: const SizedBox(
+                            trailing: SizedBox(
                               width: 80,
                               child: Row(
                                 children: [
-                                  IconButton(
+                                  const IconButton(
                                       onPressed: null,
                                       icon: Icon(
                                         Icons.edit_rounded,
@@ -101,8 +122,8 @@ class _HomeContentState extends State<HomeContent> {
                                         color: black,
                                       )),
                                   IconButton(
-                                      onPressed: null,
-                                      icon: Icon(
+                                      onPressed:()=>deleteproject(projects.projectName) ,
+                                      icon:const Icon(
                                         Icons.delete_rounded,
                                         size: 20,
                                         color: black,
@@ -144,12 +165,12 @@ class _HomeContentState extends State<HomeContent> {
                       itemBuilder: (context, index) {
                         final userdata = data[index];
                         return ListTile(
-                          leading:const CircleAvatar(
+                          leading: const CircleAvatar(
                               foregroundImage: AssetImage('avatars/man.png')),
                           title: Text('${userdata.username}'),
                           subtitle: Text(
                             '${userdata.userDesignation}',
-                            style:const TextStyle(fontSize: 12),
+                            style: const TextStyle(fontSize: 12),
                           ),
                           horizontalTitleGap: 10,
                         );
@@ -176,4 +197,5 @@ class _HomeContentState extends State<HomeContent> {
       ],
     );
   }
+  
 }

@@ -31,7 +31,7 @@ class _BugsSectionState extends State<BugsSection> {
             final bugs = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) {
-                final bug = bugs![index];
+                final bug = bugs[index];
                 return Column(
                   children: [
                     ListTile(
@@ -56,7 +56,7 @@ class _BugsSectionState extends State<BugsSection> {
                   ],
                 );
               },
-              itemCount: 1,
+              itemCount: bugs!.length,
             );
           }
         });
