@@ -4,6 +4,7 @@ import '../themes/themes.dart';
 class CTAButton extends StatelessWidget {
   final double left;
   final double right;
+  final double bottom;
   final String text;
   final Function()? onTap;
   final Color color;
@@ -12,6 +13,7 @@ class CTAButton extends StatelessWidget {
       this.color = black,
       this.left = 100,
       this.right = 100,
+      this.bottom = 0,
       required this.text,
       this.onTap});
 
@@ -20,7 +22,8 @@ class CTAButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: EdgeInsets.only(left: left, right: right),
+        padding: EdgeInsets.only(left: left, right: right,
+        bottom: bottom),
         child: Container(
           height: 50,
           decoration: BoxDecoration(
