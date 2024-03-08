@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project_management/presentation/helper_functions/helper_functions.dart';
+import 'package:project_management/presentation/themes/themes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BugsSection extends StatefulWidget {
@@ -24,10 +25,38 @@ class _BugsSectionState extends State<BugsSection> {
             context, supabase, widget.projectname.toString()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text('');
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return showErrorDialog(context, 'Error in retreiving data');
-          } else {
+          } else if (snapshot.data!.isEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ListTile(
+                  shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  focusColor: whiteContainer,
+                  hoverColor: whiteContainer,
+                  autofocus: true,
+                  selected: true,
+                  selectedColor: black,
+                  selectedTileColor: whiteContainer,
+                  enabled: true,
+                  tileColor: whiteBG,
+                  leading: CircleAvatar(
+                      child: Text('😒', style: TextStyle(fontSize: 30))),
+                  title: Text(
+                    'Feels like everything\'s good ',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  subtitle:Text(
+                    'No bugs found, 🥳 ',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ],
+            );
+          } else if (snapshot.hasData) {
             final bugs = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) {
@@ -58,6 +87,8 @@ class _BugsSectionState extends State<BugsSection> {
               },
               itemCount: bugs!.length,
             );
+          } else {
+            return const Text('');
           }
         });
   }

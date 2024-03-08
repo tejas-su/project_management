@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:project_management/models/projects_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'home_screen.dart';
 import 'imports.dart';
 
 class HomeContent extends StatefulWidget {
@@ -32,24 +35,50 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   late String deletingproject = '';
-  
 
- Future<dynamic> deleteproject(selectedproject) async {
-  try{
-    showDialog(
+  Future<dynamic> deleteproject(selectedproject) async {
+    try {
+      showDialog(
         context: context,
-        builder: (context) => Container(),
+        builder: (context) => Container(
+          color: whiteBG,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset('lottie/ani1.json', height: 500),
+              const SizedBox(
+                height: 50,
+              ),
+              Text(
+                'Crunching your data, this might take some time',
+                style: GoogleFonts.dmSerifDisplay(
+                    fontWeight: FontWeight.w500, fontSize: 25),
+              )
+            ],
+          ),
+        ),
       );
-    await supabase
-      .from('projects')
-      .delete()
-      .eq('project_name', selectedproject);
-  }catch(e){
-    // showDialog(
+      await supabase
+          .from('projects')
+          .delete()
+          .eq('project_name', selectedproject);
 
-    // );
-  }
-    
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoadingScreen(
+            screen: HomeScreen(
+              supabase: widget.supabase,
+            ),
+            supabase: widget.supabase,
+          ),
+        ),
+      );
+    } catch (e) {
+      // showDialog(
+
+      // );
+    }
   }
 
   late String firstproject;
@@ -74,10 +103,10 @@ class _HomeContentState extends State<HomeContent> {
                   context, supabase, selectedprojectname),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text('');
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return showErrorDialog(context, 'Error in retreiving data');
-                } else {
+                } else if (snapshot.hasData) {
                   final project = snapshot.data;
 
                   return ListView.builder(
@@ -122,8 +151,9 @@ class _HomeContentState extends State<HomeContent> {
                                         color: black,
                                       )),
                                   IconButton(
-                                      onPressed:()=>deleteproject(projects.projectName) ,
-                                      icon:const Icon(
+                                      onPressed: () =>
+                                          deleteproject(projects.projectName),
+                                      icon: const Icon(
                                         Icons.delete_rounded,
                                         size: 20,
                                         color: black,
@@ -135,6 +165,25 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                         );
                       });
+                } else {
+                  return ListTile(
+                    shape: const BeveledRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    focusColor: whiteContainer,
+                    hoverColor: whiteContainer,
+                    autofocus: true,
+                    selected: selected,
+                    selectedColor: black,
+                    selectedTileColor: whiteContainer,
+                    enabled: true,
+                    tileColor: whiteBG,
+                    leading: const CircleAvatar(
+                        child: Text('😒',
+                        style: TextStyle(fontSize: 30))),
+                    title: const Text('Add a project',
+                      style:TextStyle(fontSize: 12),
+                    ),
+                  );
                 }
               }),
         ),
@@ -156,10 +205,10 @@ class _HomeContentState extends State<HomeContent> {
                     context, supabase, selectedprojectname),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text('');
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return showErrorDialog(context, 'Error in retreiving data');
-                  } else {
+                  } else if(snapshot.hasData) {
                     final data = snapshot.data;
                     return ListView.builder(
                       itemBuilder: (context, index) {
@@ -178,6 +227,26 @@ class _HomeContentState extends State<HomeContent> {
                       itemCount: data!.length,
                     );
                   }
+                  else {
+                  return ListTile(
+                    shape: const BeveledRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    focusColor: whiteContainer,
+                    hoverColor: whiteContainer,
+                    autofocus: true,
+                    selected: selected,
+                    selectedColor: black,
+                    selectedTileColor: whiteContainer,
+                    enabled: true,
+                    tileColor: whiteBG,
+                    leading: const CircleAvatar(
+                        child: Text('😒',
+                        style: TextStyle(fontSize: 30))),
+                    title: const Text('Add a user',
+                      style:TextStyle(fontSize: 12),
+                    ),
+                  );
+                }
                 })),
         //
         //bugs section
@@ -197,5 +266,4 @@ class _HomeContentState extends State<HomeContent> {
       ],
     );
   }
-  
 }
