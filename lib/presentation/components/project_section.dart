@@ -18,7 +18,6 @@ class ProjectSection extends StatelessWidget {
       "assets/avatars/man (4).png",
       "assets/avatars/man (5).png",
     ];
-
     final supabase = Supabase.instance.client;
 
     return FutureBuilder(
@@ -66,19 +65,19 @@ class ProjectSection extends StatelessWidget {
                                 images[Random().nextInt(5)],
                               ),
                             ),
-                            title: const Text("username"),
-                            subtitle: const Text("team lead"),
+                            title: Text("${projectdata['project_name']}"),
                           ),
                         ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(top: 10.0, left: 25, bottom: 2),
-                          child: Text("Team : Kraken"),
-                        ),
-                         Padding(
+                        Padding(
                           padding:
                               const EdgeInsets.only(top: 10.0, left: 25, bottom: 2),
-                          child:  Text(projectdata['project_name']),
+                          child: Text("Team :${projectdata['team_name']} "),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10.0, left: 25, bottom: 2),
+                          child: Text('Description: ${projectdata['project_description']}',overflow:TextOverflow.ellipsis,
+                          softWrap: true,),
                         )
                       ],
                     ),

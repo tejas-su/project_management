@@ -1,9 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:project_management/models/users_model.dart';
 import 'package:project_management/presentation/screens/imports.dart';
-import 'package:project_management/presentation/screens/loading_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../themes/themes.dart';
@@ -18,8 +16,6 @@ class UsersSection extends StatefulWidget {
 class _UsersSectionState extends State<UsersSection> {
   @override
   Widget build(BuildContext context) {
-    
-
     List images = [
       "assets/avatars/man (1).png",
       "assets/avatars/man (2).png",
@@ -27,31 +23,15 @@ class _UsersSectionState extends State<UsersSection> {
       "assets/avatars/man (4).png",
       "assets/avatars/man (5).png",
     ];
+    final supabase = Supabase.instance.client;
 
-    // Future<List<Map<String, dynamic>>> fetchUserAndProjectsData() async{
-      final supabase = Supabase.instance.client;
-
-    //   //select users and project table
-    //   final result = await  supabase.from('users').select('username, user_designation').leftJoin('projects', on 'user_id = projects.user_id').select('projects.name as project_name');
-    // }
-
-    
     return FutureBuilder(
         future: supabase.from('users').select(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return  Lottie.asset('lottie/ani1.json', height: 500);
+            return Lottie.asset('lottie/ani1.json', height: 500);
           } else if (snapshot.hasError) {
-            return AlertDialog(
-              title: const Text("Oops, something went wrong"),
-              content: Text('${snapshot.error}'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("OK"),
-                ),
-              ],
-            );
+            return showErrorDialog(context, 'error in retriewing data');
           } else {
             final data = snapshot.data as List<dynamic>;
             return GridView.builder(
@@ -88,12 +68,13 @@ class _UsersSectionState extends State<UsersSection> {
                         Padding(
                           padding: const EdgeInsets.only(
                               top: 10.0, left: 25, bottom: 2),
-                          child: Text("Team : ${userdata['team_name']}"),
+                          child: Text("Project : ${userdata['project_name']}"),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
                               top: 10.0, left: 25, bottom: 2),
-                          child: Text('User designation : ${userdata['user_designation']}'),
+                          child: Text(
+                              'User designation : ${userdata['user_designation']}'),
                         )
                       ],
                     ),

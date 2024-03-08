@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_management/presentation/widgets/text_field.dart';
 import '../themes/themes.dart';
+import '../widgets/cta_button.dart';
 
 class AddNewScreen extends StatelessWidget {
   const AddNewScreen({super.key});
@@ -89,11 +90,15 @@ class AddNewScreen extends StatelessWidget {
                   InputTextField(
                     hintText: 'Enter Bug Description',
                     color: whiteContainer,
-                    bottom: 32,
+                    bottom: 10,
+                    
                     left: 32,
                     right: 200,
                     maxLines: 10,
                   ),
+                  CTAButton(text: 'Save',onTap: null,left: 500,right: 500,bottom: 50,),
+                                    
+                                  CTAButton(text: 'Cancel',onTap: null,left: 500,right: 500,)
                 ]),
           ),
         ),

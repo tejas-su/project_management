@@ -16,7 +16,7 @@ class users {
 
   users.fromJson(Map<String, dynamic> json) {
     userid = json['userid'];
-    username = json['username'];
+    username = json['user_name'];
     email = json['email'];
     projectid = json['projectid'];
     teamId = json['team_id'];

@@ -4,6 +4,7 @@ import '../themes/themes.dart';
 class InputTextField extends StatelessWidget {
   final TextEditingController? controller;
   final IconButton? suffixIcon;
+  final Function(String)? onSubmitted;
 
   ///Bottom Padding
   final double bottom;
@@ -27,6 +28,7 @@ class InputTextField extends StatelessWidget {
   final int maxLines;
   const InputTextField(
       {super.key,
+      this.onSubmitted,
       this.controller,
       this.bottom = 0,
       this.left = 80,
@@ -46,6 +48,7 @@ class InputTextField extends StatelessWidget {
             color: color,
             borderRadius: const BorderRadius.all(Radius.circular(10))),
         child: TextField(
+          onSubmitted: onSubmitted,
           maxLines: maxLines,
           controller: controller,
           showCursor: true,

@@ -1,10 +1,11 @@
 import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:project_management/models/bugs_model.dart';
 import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/models/users_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void showErrorDialog(BuildContext context, String message) {
+ showErrorDialog(BuildContext context, String message) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -20,22 +21,22 @@ void showErrorDialog(BuildContext context, String message) {
   );
 }
 
-//final Storage localStorage = window.localStorage;
-//var groupName = localStorage['groupName'];
+final Storage localStorage = window.localStorage;
+var groupName = localStorage['groupName'];
 
 class HelperFunctions {
   Future<List<project>> getProjects(BuildContext context,
-      SupabaseClient supabase,groupname, selectedprojectname) async {
+      SupabaseClient supabase, selectedprojectname) async {
     try {
-      //teamname is name of team that login into website so to fetch corresponding teams details
+      //groupName is name of team that login into website so to fetch corresponding teams details
       final response = await supabase
           .from('projects')
-          .select()
-          .eq('team_name', 'group1')
+          .select('*')
+          .eq('team_name', '$groupName')
           .order('project_name');
 
       final projects =
-          (response as List).map((json) => project.fromJson(json)).toList(); 
+          (response as List).map((json) => project.fromJson(json)).toList();
 
       if (response.isEmpty) {
         showErrorDialog(
@@ -49,24 +50,60 @@ class HelperFunctions {
     }
   }
 
-Future<List<users>> getUsersForProject(
-      BuildContext context, SupabaseClient supabase, String selectedprojectname) async {
+  Future<List<users>> getUsersForProject(BuildContext context,
+      SupabaseClient supabase, selectedprojectname) async {
+    //Default:To fetch first project name  and its details
+    var projects = await getProjects(context, supabase, selectedprojectname);
+    var firstProject = projects[0];
+    String firstProjectName = firstProject.projectName.toString();
+
+    //Selecting the project name to fetch its users
+    final String projectname =
+        selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
     try {
+      print(
+          'The retrieved project name from the home content: $selectedprojectname');
       final response = await supabase
           .from('users')
           .select()
-          .eq('project_name', 'project4')
+          .eq('project_name', projectname)
           .order('user_name');
 
-      final project_users = (response as List)
-          .map((json) => users.fromJson(json))
-          .toList();
-
+      final project_users =
+          (response as List).map((json) => users.fromJson(json)).toList();
       return project_users;
     } catch (error) {
       showErrorDialog(context, error.toString());
       return [];
     }
   }
-}
 
+  Future<List<bugs>> getBugsForProject(
+    BuildContext context,
+    SupabaseClient supabase,
+    String selectedprojectname,
+  ) async {
+    //Default:To fetch first project name  and its details
+    var projects = await getProjects(context, supabase, selectedprojectname);
+    var firstProject = projects[0];
+    String firstProjectName = firstProject.projectName.toString();
+
+    //Selecting the project name to fetch its users
+    final String projectname =
+        selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
+    try {
+      final response = await supabase
+          .from('bugs')
+          .select()
+          .eq('project_name', projectname)
+          .order('bugs_name');
+
+      final project_bugs =
+          (response as List).map((json) => bugs.fromJson(json)).toList();
+      return project_bugs;
+    } catch (error) {
+      showErrorDialog(context, error.toString());
+      return [];
+    }
+  }
+}

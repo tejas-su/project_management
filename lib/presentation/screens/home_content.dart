@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_management/models/projects_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'imports.dart';
 
@@ -11,23 +12,29 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  //selected project name
+  String selectedprojectname = '';
+
+  //user taps on project
   bool selected = false;
+
+  //helpful functions to retrieve project and user details of team that login to website
+  HelperFunctions helperFunctions = HelperFunctions();
+
+  final supabase = Supabase.instance.client;
+
   //on tap of list tile event handler
-  void onTap(index) {
+  void retrieveIndex(BuildContext context, projectname) {
     setState(() {
+      selectedprojectname = projectname;
       selected = !selected;
     });
   }
 
-  final obj = HelperFunctions();
+  late String firstproject;
+
   @override
   Widget build(BuildContext context) {
-    final Storage localStorage = window.localStorage;
-    final supabase = Supabase.instance.client;
-    var groupName = localStorage['groupName'];
-    var selectedprojectname;
-    //helpful functions to retrieve project and user details of team that login to website
-    HelperFunctions helperFunctions = HelperFunctions();
     return Row(
       children: [
         //
@@ -43,21 +50,12 @@ class _HomeContentState extends State<HomeContent> {
                   Border(right: BorderSide(width: 3, color: whiteContainer))),
           child: FutureBuilder(
               future: helperFunctions.getProjects(
-                  context, supabase, groupName.toString(), selectedprojectname),
+                  context, supabase, selectedprojectname),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Text('');
                 } else if (snapshot.hasError) {
-                  return AlertDialog(
-                    title: const Text("Oops, something went wrong"),
-                    content: Text('${snapshot.error}'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text("OK"),
-                      ),
-                    ],
-                  );
+                  return showErrorDialog(context, 'Error in retreiving data');
                 } else {
                   final project = snapshot.data;
 
@@ -78,14 +76,10 @@ class _HomeContentState extends State<HomeContent> {
                             selected: selected,
                             selectedColor: black,
                             selectedTileColor: whiteContainer,
-                            //=> onTap(index)
                             onTap: () {
-                              setState(() {
-                                selected = !selected;
-                                selectedprojectname = projects.projectName;
-                              });
-                              //return show_user();
+                              retrieveIndex(context, projects.projectName);
                             },
+                            //=> onTap(index)
                             enabled: true,
                             tileColor: whiteBG,
                             leading: const CircleAvatar(
@@ -95,13 +89,27 @@ class _HomeContentState extends State<HomeContent> {
                               '${projects.projectDescription}',
                               style: const TextStyle(fontSize: 12),
                             ),
-                            trailing: const IconButton(
-                                onPressed: null,
-                                icon: Icon(
-                                  Icons.edit_rounded,
-                                  size: 20,
-                                  color: black,
-                                )),
+                            trailing: const SizedBox(
+                              width: 80,
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: null,
+                                      icon: Icon(
+                                        Icons.edit_rounded,
+                                        size: 20,
+                                        color: black,
+                                      )),
+                                  IconButton(
+                                      onPressed: null,
+                                      icon: Icon(
+                                        Icons.delete_rounded,
+                                        size: 20,
+                                        color: black,
+                                      )),
+                                ],
+                              ),
+                            ),
                             horizontalTitleGap: 10,
                           ),
                         );
@@ -123,40 +131,30 @@ class _HomeContentState extends State<HomeContent> {
                 border:
                     Border(right: BorderSide(width: 3, color: whiteContainer))),
             child: FutureBuilder(
-                future: helperFunctions.getUsersForProject(context, supabase,
-                    groupName.toString()),
+                future: helperFunctions.getUsersForProject(
+                    context, supabase, selectedprojectname),
                 builder: (context, snapshot) {
-                  
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('');
+                    return const Text('');
                   } else if (snapshot.hasError) {
-                    return AlertDialog(
-                      title: const Text("Oops, something went wrong"),
-                      content: Text('${snapshot.error}'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text("OK"),
-                        ),
-                      ],
-                    );
+                    return showErrorDialog(context, 'Error in retreiving data');
                   } else {
-                    final users = snapshot.data;
+                    final data = snapshot.data;
                     return ListView.builder(
                       itemBuilder: (context, index) {
-                        
+                        final userdata = data[index];
                         return ListTile(
-                        leading: CircleAvatar(
-                            foregroundImage: AssetImage('avatars/man.png')),
-                        title: Text('username'),
-                        subtitle: Text(
-                          'username@yahoo.com',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        horizontalTitleGap: 10,
-                      );
+                          leading:const CircleAvatar(
+                              foregroundImage: AssetImage('avatars/man.png')),
+                          title: Text('${userdata.username}'),
+                          subtitle: Text(
+                            '${userdata.userDesignation}',
+                            style:const TextStyle(fontSize: 12),
+                          ),
+                          horizontalTitleGap: 10,
+                        );
                       },
-                      itemCount: 3,
+                      itemCount: data!.length,
                     );
                   }
                 })),
@@ -165,27 +163,16 @@ class _HomeContentState extends State<HomeContent> {
         //
         Container(
             height: 800,
-            width: 750,
+            width: 700,
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
                 border:
                     Border(right: BorderSide(width: 3, color: whiteContainer))),
-            child: const BugsSection()),
-        //
-        //comments section
-        //
-        Container(
-          height: 800,
-          width: 400,
-          decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-              border:
-                  Border(right: BorderSide(width: 3, color: whiteContainer))),
-          child: const CommentsSection(),
-        )
+            child: BugsSection(
+              projectname: selectedprojectname,
+            )),
       ],
     );
   }
