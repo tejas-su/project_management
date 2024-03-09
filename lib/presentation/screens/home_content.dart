@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:project_management/models/projects_model.dart';
+import 'package:project_management/presentation/screens/update_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_screen.dart';
 import 'imports.dart';
@@ -15,6 +15,7 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  final Storage localStorage = window.localStorage;
   //selected project name
   String selectedprojectname = '';
 
@@ -33,6 +34,8 @@ class _HomeContentState extends State<HomeContent> {
       selected = !selected;
     });
   }
+
+
 
   late String deletingproject = '';
 
@@ -82,6 +85,9 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   late String firstproject;
+  void update(){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateScreen(supabase: supabase),));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +134,9 @@ class _HomeContentState extends State<HomeContent> {
                             selectedTileColor: whiteContainer,
                             onTap: () {
                               retrieveIndex(context, projects.projectName);
+                             localStorage['projectName']=projects.projectName.toString();
+                             var se=localStorage['projectName'];
+                             print('Project name saved to local $se');
                             },
                             //=> onTap(index)
                             enabled: true,
@@ -143,8 +152,8 @@ class _HomeContentState extends State<HomeContent> {
                               width: 80,
                               child: Row(
                                 children: [
-                                  const IconButton(
-                                      onPressed: null,
+                                   IconButton(
+                                    onPressed: update,
                                       icon: Icon(
                                         Icons.edit_rounded,
                                         size: 20,
@@ -266,4 +275,6 @@ class _HomeContentState extends State<HomeContent> {
       ],
     );
   }
+
+  
 }

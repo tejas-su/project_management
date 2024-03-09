@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeContent(
         supabase: widget.supabase,
       ),
-      const CommentsSection(),
+      CommentsSection(supabase: widget.supabase,),
       const UsersScreen(),
       const ProjectsScreen(),
       const SearchScreen(),
