@@ -10,7 +10,7 @@ export 'users_screen.dart';
 export '../themes/themes.dart';
 export 'package:project_management/presentation/helper_functions/helper_functions.dart';
 export '../components/bugs_section.dart';
-export '../components/comments_section.dart';
+export '../components/chats_section.dart';
 export 'package:lottie/lottie.dart';
 export '../widgets/cta_button.dart';
 export '../widgets/text_field.dart';

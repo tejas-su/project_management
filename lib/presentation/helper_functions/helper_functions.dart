@@ -1,6 +1,9 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:project_management/models/bugs_model.dart';
+import 'package:project_management/models/chats_model.dart';
 import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/models/users_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,6 +27,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 //retrieve the group name from local storage
 final Storage localStorage = window.localStorage;
 var groupName = localStorage['groupName'];
+
+//retrieve the selected project name from local storage
+var projectName = localStorage['projectName'];
 
 class HelperFunctions {
   Future<List<project>> getProjects(BuildContext context,
@@ -90,18 +96,47 @@ class HelperFunctions {
     String firstProjectName = firstProject.projectName.toString();
 
     //Selecting the project name to fetch its users
-    final String projectname =
+    final String finalprojectname =
         selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
     try {
       final response = await supabase
           .from('bugs')
           .select()
-          .eq('project_name', projectname)
+          .eq('project_name', finalprojectname)
           .order('bugs_name');
 
       final project_bugs =
           (response as List).map((json) => bugs.fromJson(json)).toList();
       return project_bugs;
+    } catch (error) {
+      showErrorDialog(context, error.toString());
+      return [];
+    }
+  }
+  //chat retrieval function
+   Future<List<chats_model>> getChats(
+    BuildContext context,
+    SupabaseClient supabase,
+    String selectedprojectname,
+  ) async {
+    //Default:To fetch first project name  and its details
+    var projects = await getProjects(context, supabase, selectedprojectname);
+    var firstProject = projects[0];
+    String firstProjectName = firstProject.projectName.toString();
+
+    //Selecting the project name to fetch its users
+    final String finalprojectname =
+        selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
+    try {
+      final response = await supabase
+          .from('chats')
+          .select()
+          .eq('project_name', finalprojectname)
+          .order('chat');
+
+      final project_chats =
+          (response as List).map((json) => chats_model.fromJson(json)).toList();
+      return project_chats;
     } catch (error) {
       showErrorDialog(context, error.toString());
       return [];

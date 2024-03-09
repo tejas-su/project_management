@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:project_management/presentation/screens/home_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'imports.dart';
 
@@ -15,6 +16,7 @@ class UpdateScreen extends StatefulWidget {
 class _UpdateScreenState extends State<UpdateScreen> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     TextEditingController projectName = TextEditingController();
 
     TextEditingController projectDesc = TextEditingController();
@@ -32,7 +34,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
     TextEditingController bugsDesc = TextEditingController();
 
-    void dispose() {
+    void clearTextField() {
       projectName.clear();
       projectDesc.clear();
       userName.clear();
@@ -51,7 +53,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     final Storage localStorage = window.localStorage;
     var groupName = localStorage['groupName'];
 
-    double width = MediaQuery.of(context).size.width;
+    
 
     //function to show error message
     void showErrorDialog(
@@ -75,7 +77,69 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
 
     //function to update the data to the database
+    void updateUser()async{
+      try{
+        if(userDesig.text.isEmpty ||
+            userName.text.isEmpty ||
+            userEmail.text.isEmpty ){
+              showErrorDialog(
+            context,
+            'Oops, something went wrong',
+            'Please fill in all the fields',
+          );
+            }
+            else{
+              //show loading screen
+          showDialog(
+            context: context,
+            builder: (context) => Container(
+              color: whiteBG,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Lottie.asset('lottie/ani1.json', height: 500),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    'Saving your data, this might take some time',
+                    style: GoogleFonts.dmSerifDisplay(
+                        fontWeight: FontWeight.w500, fontSize: 25),
+                  )
+                ],
+              ),
+            ),
+          );
+          //update user 
+          var uresponse = await widget.supabase.from('users').upsert({
+            'user_name': userName.text,
+            'user_designation': userDesig.text,
+            'user_email': userEmail.text,
+            'project_name': projectName.text,
+            'name': userName.text,
+          }).select();
+          //clear the text fields after saving
+          clearTextField();
+          //pop the loading screen after loading
 
+          Navigator.of(context).pop();
+          if (
+              uresponse.isNotEmpty 
+              ) {
+            showErrorDialog(context, 'Successfully added the user 🥳',
+                '');
+          } else {
+            showErrorDialog(context, 'Oops something went wrong 😭',
+                'Make sure you have an active internet connection');
+          }
+          
+            }
+      }catch (e){
+        showErrorDialog(context, 'Oops something went wrong 😭',
+                '$e');
+      }
+    }
     void updateProject() async {
       try {
         if (projectName.text.isEmpty ||
@@ -167,7 +231,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           ),
         ),
         titleSpacing: 25,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        leading: IconButton(onPressed: (){
+          Navigator.of(context).pop();
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoadingScreen(supabase: widget.supabase, screen: HomeScreen(supabase: widget.supabase,)),));
+        }, icon: Icon(Icons.fork_left_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -255,6 +323,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
             left: 32,
             right: 700,
           ),
+          CTAButton(
+            text: 'Save',
+            onTap:updateUser,
+            // left: 32,
+            // right: width*1/3,
+          ),
           //bug details starts from here
           const Padding(
             padding: EdgeInsets.only(left: 32.0),
@@ -294,11 +368,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           const SizedBox(
             height: 30,
           ),
-          CTAButton(
+           const CTAButton(
             text: 'Save',
-            onTap: updateProject,
-            left: 32,
-            right: width / 1.3,
+            onTap:null,
+            // left: 32,
+            // right: width*1/3,
           ),
           const SizedBox(
             height: 50,
