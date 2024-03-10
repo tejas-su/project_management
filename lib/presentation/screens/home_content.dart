@@ -16,6 +16,7 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   final Storage localStorage = window.localStorage;
+
   //selected project name
   String selectedprojectname = '';
 
@@ -26,16 +27,14 @@ class _HomeContentState extends State<HomeContent> {
   HelperFunctions helperFunctions = HelperFunctions();
 
   final supabase = Supabase.instance.client;
-
+  int selectedIndex = -1;
   //on tap of list tile event handler
-  void retrieveIndex(BuildContext context, projectname) {
+  void retrieveIndex(BuildContext context, projectname, index) {
     setState(() {
       selectedprojectname = projectname;
-      selected = !selected;
+      selectedIndex = index;
     });
   }
-
-
 
   late String deletingproject = '';
 
@@ -85,8 +84,11 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   late String firstproject;
-  void update(){
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateScreen(supabase: supabase),));
+  void update(projectName) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>
+          UpdateScreen(supabase: supabase, projectName: projectName),
+    ));
   }
 
   @override
@@ -112,6 +114,24 @@ class _HomeContentState extends State<HomeContent> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return showErrorDialog(context, 'Error in retreiving data');
+                } else if (snapshot.data!.isEmpty) {
+                  return ListTile(
+                    shape: const BeveledRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    focusColor: whiteContainer,
+                    hoverColor: whiteContainer,
+                    autofocus: true,
+                    selected: selected,
+                    selectedColor: black,
+                    selectedTileColor: whiteContainer,
+                    tileColor: whiteBG,
+                    leading: const CircleAvatar(
+                        child: Text('😒', style: TextStyle(fontSize: 30))),
+                    title: const Text(
+                      'Add a project',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  );
                 } else if (snapshot.hasData) {
                   final project = snapshot.data;
 
@@ -119,6 +139,8 @@ class _HomeContentState extends State<HomeContent> {
                       itemCount: project!.length,
                       itemBuilder: (context, index) {
                         final projects = project[index];
+                        localStorage['firstProject'] =
+                            projects.projectName.toString();
                         return Padding(
                           padding:
                               const EdgeInsets.only(left: 5, right: 5, top: 10),
@@ -129,16 +151,17 @@ class _HomeContentState extends State<HomeContent> {
                             focusColor: whiteContainer,
                             hoverColor: whiteContainer,
                             autofocus: true,
-                            selected: selected,
+                            selected: selectedIndex == index,
                             selectedColor: black,
                             selectedTileColor: whiteContainer,
                             onTap: () {
-                              retrieveIndex(context, projects.projectName);
-                             localStorage['projectName']=projects.projectName.toString();
-                             var se=localStorage['projectName'];
-                             print('Project name saved to local $se');
+                              retrieveIndex(
+                                  context, projects.projectName, index);
+                              localStorage['projectName'] =
+                                  projects.projectName.toString();
+                              var se = localStorage['projectName'];
+                              print('Project name saved to local $se');
                             },
-                            //=> onTap(index)
                             enabled: true,
                             tileColor: whiteBG,
                             leading: const CircleAvatar(
@@ -152,9 +175,10 @@ class _HomeContentState extends State<HomeContent> {
                               width: 80,
                               child: Row(
                                 children: [
-                                   IconButton(
-                                    onPressed: update,
-                                      icon: Icon(
+                                  IconButton(
+                                      onPressed: () =>
+                                          update(projects.projectName),
+                                      icon: const Icon(
                                         Icons.edit_rounded,
                                         size: 20,
                                         color: black,
@@ -175,24 +199,7 @@ class _HomeContentState extends State<HomeContent> {
                         );
                       });
                 } else {
-                  return ListTile(
-                    shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    focusColor: whiteContainer,
-                    hoverColor: whiteContainer,
-                    autofocus: true,
-                    selected: selected,
-                    selectedColor: black,
-                    selectedTileColor: whiteContainer,
-                    enabled: true,
-                    tileColor: whiteBG,
-                    leading: const CircleAvatar(
-                        child: Text('😒',
-                        style: TextStyle(fontSize: 30))),
-                    title: const Text('Add a project',
-                      style:TextStyle(fontSize: 12),
-                    ),
-                  );
+                  return Text('');
                 }
               }),
         ),
@@ -200,44 +207,26 @@ class _HomeContentState extends State<HomeContent> {
         //Users Section
         //
         Container(
-            height: 800,
-            width: 350,
-            padding: const EdgeInsets.only(top: 10),
-            decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30)),
-                border:
-                    Border(right: BorderSide(width: 3, color: whiteContainer))),
-            child: FutureBuilder(
-                future: helperFunctions.getUsersForProject(
-                    context, supabase, selectedprojectname),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return showErrorDialog(context, 'Error in retreiving data');
-                  } else if(snapshot.hasData) {
-                    final data = snapshot.data;
-                    return ListView.builder(
-                      itemBuilder: (context, index) {
-                        final userdata = data[index];
-                        return ListTile(
-                          leading: const CircleAvatar(
-                              foregroundImage: AssetImage('avatars/man.png')),
-                          title: Text('${userdata.username}'),
-                          subtitle: Text(
-                            '${userdata.userDesignation}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          horizontalTitleGap: 10,
-                        );
-                      },
-                      itemCount: data!.length,
-                    );
-                  }
-                  else {
-                  return ListTile(
+          height: 800,
+          width: 350,
+          padding: const EdgeInsets.only(top: 10),
+          decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+              border:
+                  Border(right: BorderSide(width: 3, color: whiteContainer))),
+          child: FutureBuilder(
+            future: helperFunctions.getUsersForProject(
+                context, supabase, selectedprojectname),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return showErrorDialog(context, 'Error in retreiving data');
+              } else if (snapshot.data!.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ListTile(
                     shape: const BeveledRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     focusColor: whiteContainer,
@@ -249,14 +238,47 @@ class _HomeContentState extends State<HomeContent> {
                     enabled: true,
                     tileColor: whiteBG,
                     leading: const CircleAvatar(
-                        child: Text('😒',
-                        style: TextStyle(fontSize: 30))),
-                    title: const Text('Add a user',
-                      style:TextStyle(fontSize: 12),
+                        child: Text('😒', style: TextStyle(fontSize: 30))),
+                    title: const Text(
+                      'Add a user',
+                      style: TextStyle(fontSize: 12),
                     ),
-                  );
-                }
-                })),
+                  ),
+                );
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                final data = snapshot.data;
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    final userdata = data[index];
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                      child: ListTile(
+                        selectedColor: black,
+                        shape: const BeveledRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        selected: true,
+                        selectedTileColor: whiteContainer,
+                        leading: const CircleAvatar(
+                            foregroundImage: AssetImage('avatars/man.png')),
+                        title: Text('${userdata.username}'),
+                        subtitle: Text(
+                          '${userdata.userDesignation}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        horizontalTitleGap: 10,
+                      ),
+                    );
+                  },
+                  itemCount: data!.length,
+                );
+              } else {
+                return const Text('');
+              }
+            },
+          ),
+        ),
         //
         //bugs section
         //
@@ -275,6 +297,4 @@ class _HomeContentState extends State<HomeContent> {
       ],
     );
   }
-
-  
 }

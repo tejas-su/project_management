@@ -46,8 +46,11 @@ class HelperFunctions {
           (response as List).map((json) => project.fromJson(json)).toList();
 
       if (response.isEmpty) {
-        showErrorDialog(
-            context, 'Sorry Something went wrong while fetching the data');
+        print('response is empty');
+
+        return [];
+        // showErrorDialog(
+        //     context, 'Sorry Something went wrong while fetching the data');
       }
       print("\n\n The response for the team : $response");
       return projects;
@@ -59,28 +62,36 @@ class HelperFunctions {
 
   Future<List<users>> getUsersForProject(BuildContext context,
       SupabaseClient supabase, selectedprojectname) async {
-    //Default:To fetch first project name  and its details
-    var projects = await getProjects(context, supabase, selectedprojectname);
-    var firstProject = projects[0];
-    String firstProjectName = firstProject.projectName.toString();
-
-    //Selecting the project name to fetch its users
-    final String projectname =
-        selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
     try {
+      //Default:To fetch first project name  and its details
+      var projects = await getProjects(context, supabase, selectedprojectname);
+      var firstProject = projects[0];
+      String firstProjectName = firstProject.projectName.toString();
+
+      //Selecting the project name to fetch its users
+      final String projectname =
+          selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
       print(
           'The retrieved project name from the home content: $selectedprojectname');
+
+      //retrieve the users
       final response = await supabase
           .from('users')
           .select()
           .eq('project_name', projectname)
           .order('user_name');
+      if (response.isEmpty) {
+        print('response is empty');
 
+        return [];
+        // showErrorDialog(
+        //     context, 'Sorry Something went wrong while fetching the data');
+      }
       final project_users =
           (response as List).map((json) => users.fromJson(json)).toList();
       return project_users;
     } catch (error) {
-      showErrorDialog(context, error.toString());
+      // showErrorDialog(context, error.toString());
       return [];
     }
   }
@@ -90,15 +101,16 @@ class HelperFunctions {
     SupabaseClient supabase,
     String selectedprojectname,
   ) async {
-    //Default:To fetch first project name  and its details
-    var projects = await getProjects(context, supabase, selectedprojectname);
-    var firstProject = projects[0];
-    String firstProjectName = firstProject.projectName.toString();
-
-    //Selecting the project name to fetch its users
-    final String finalprojectname =
-        selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
     try {
+      //Default:To fetch first project name  and its details
+      var projects = await getProjects(context, supabase, selectedprojectname);
+      var firstProject = projects[0];
+      String firstProjectName = firstProject.projectName.toString();
+
+      //Selecting the project name to fetch its users
+      final String finalprojectname =
+          selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
+      //retrieve the bugs table content
       final response = await supabase
           .from('bugs')
           .select()
@@ -109,7 +121,7 @@ class HelperFunctions {
           (response as List).map((json) => bugs.fromJson(json)).toList();
       return project_bugs;
     } catch (error) {
-      showErrorDialog(context, error.toString());
+      // showErrorDialog(context, error.toString());
       return [];
     }
   }
@@ -139,7 +151,7 @@ class HelperFunctions {
           (response as List).map((json) => chats_model.fromJson(json)).toList();
       return project_chats;
     } catch (error) {
-      showErrorDialog(context, error.toString());
+      // showErrorDialog(context, error.toString());
       return [];
     }
   }
@@ -151,24 +163,28 @@ class HelperFunctions {
     // BuildContext context,
     SupabaseClient supabase,
   ) async {
-    String column1 = 'project_name';
-    String column2 = 'team_name';
-    //String column3 = 'project_description';
+    try {
+      String column1 = 'project_name';
+      String column2 = 'team_name';
+      //String column3 = 'project_description';
 
-    final response = await supabase.from('projects').select().or((builder) {
-          // Specify the columns you want to search across
-          builder.ilike(column1.toString(), 'project');
-          builder.ilike(column2.toString(), 'project');    //'%$query%'
-          // Add more columns as needed
-        } as String  );
-         final pres =
+      final response = await supabase.from('projects').select().or((builder) {
+            // Specify the columns you want to search across
+            builder.ilike(column1.toString(), 'project');
+            builder.ilike(column2.toString(), 'project'); //'%$query%'
+            // Add more columns as needed
+          } as String);
+      final pres =
           (response as List).map((json) => project.fromJson(json)).toList();
-    // .execute();
+      // .execute();
 
-    if (response.isEmpty) {
-      throw Exception('Error searching in  table: $pres');
+      if (response.isEmpty) {
+        throw Exception('Error searching in  table: $pres');
+      }
+
+      return pres; //as List<project>
+    } catch (e) {
+      return [];
     }
-
-    return pres ;//as List<project>
   }
 }

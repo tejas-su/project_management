@@ -7,7 +7,9 @@ import 'imports.dart';
 
 class UpdateScreen extends StatefulWidget {
   final SupabaseClient supabase;
-  const UpdateScreen({super.key, required this.supabase});
+  final String projectName;
+  const UpdateScreen(
+      {super.key, required this.supabase, required this.projectName});
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
@@ -17,7 +19,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    TextEditingController projectName = TextEditingController();
+    TextEditingController projectName =
+        TextEditingController(text: widget.projectName);
 
     TextEditingController projectDesc = TextEditingController();
 
@@ -35,7 +38,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
     TextEditingController bugsDesc = TextEditingController();
 
     void clearTextField() {
-      projectName.clear();
       projectDesc.clear();
       userName.clear();
       userEmail.clear();
@@ -43,6 +45,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       name.clear();
       bugName.clear();
       bugsDesc.clear();
+      bugStatus.clear();
     }
 
     //fetch the date
@@ -52,8 +55,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
     //pull the team name from the cache
     final Storage localStorage = window.localStorage;
     var groupName = localStorage['groupName'];
-
-    
 
     //function to show error message
     void showErrorDialog(
@@ -76,20 +77,82 @@ class _UpdateScreenState extends State<UpdateScreen> {
       );
     }
 
-    //function to update the data to the database
-    void updateUser()async{
-      try{
-        if(userDesig.text.isEmpty ||
+    //function to update user
+    void updateUser() async {
+      try {
+        if (userDesig.text.isEmpty ||
             userName.text.isEmpty ||
-            userEmail.text.isEmpty ){
-              showErrorDialog(
+            userEmail.text.isEmpty ||
+            projectName.text.isEmpty) {
+          showErrorDialog(
             context,
             'Oops, something went wrong',
             'Please fill in all the fields',
           );
-            }
-            else{
-              //show loading screen
+        } else {
+          //show loading screen
+          showDialog(
+            context: context,
+            builder: (context) => Container(
+              color: whiteBG,
+              child: Container(
+                color: whiteBG,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Lottie.asset('lottie/ani1.json', height: 500),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    Text(
+                      'Saving your data, this might take some time',
+                      style: GoogleFonts.dmSerifDisplay(
+                          fontWeight: FontWeight.w500, fontSize: 25),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+          //update user
+          var uresponse = await widget.supabase.from('users').upsert({
+            'user_name': userName.text,
+            'user_designation': userDesig.text,
+            'user_email': userEmail.text,
+            'project_name': projectName.text,
+            'name': userName.text,
+          }).select();
+          //clear the text fields after saving
+          clearTextField();
+          //pop the loading screen after loading
+
+          Navigator.of(context).pop();
+          if (uresponse.isNotEmpty) {
+            showErrorDialog(context, 'Successfully added the user 🥳', '');
+          } else {
+            showErrorDialog(context, 'Oops something went wrong 😭',
+                'Make sure you have an active internet connection');
+          }
+        }
+      } catch (e) {
+        showErrorDialog(context, 'Oops something went wrong 😭', '$e');
+      }
+    }
+
+    //function to update the bugs
+    void updateBugs() async {
+      try {
+        if (projectName.text.isEmpty ||
+            bugName.text.isEmpty ||
+            bugStatus.text.isEmpty) {
+          showErrorDialog(
+            context,
+            'Oops, something went wrong',
+            'Please fill in all the fields',
+          );
+        } else {
+          //show loading screen
           showDialog(
             context: context,
             builder: (context) => Container(
@@ -111,47 +174,40 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          //update user 
-          var uresponse = await widget.supabase.from('users').upsert({
-            'user_name': userName.text,
-            'user_designation': userDesig.text,
-            'user_email': userEmail.text,
+          //update user
+          var bresponse = await widget.supabase.from('bugs').upsert({
+            'bugs_name': bugName.text,
+            'bug_status': bugStatus.text,
+            'bugs_description': bugsDesc.text,
             'project_name': projectName.text,
-            'name': userName.text,
+            'update_date': formattedDate,
           }).select();
+
           //clear the text fields after saving
           clearTextField();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
-          if (
-              uresponse.isNotEmpty 
-              ) {
-            showErrorDialog(context, 'Successfully added the user 🥳',
-                '');
+          if (bresponse.isNotEmpty) {
+            showErrorDialog(context, 'Successfully added 🥳',
+                'Don\'t forget to squash those bugs');
           } else {
             showErrorDialog(context, 'Oops something went wrong 😭',
                 'Make sure you have an active internet connection');
           }
-          
-            }
-      }catch (e){
-        showErrorDialog(context, 'Oops something went wrong 😭',
-                '$e');
+        }
+      } catch (e) {
+        showErrorDialog(context, 'Oops something went wrong 😭', '$e');
       }
     }
+
+//update or insert the project if it does not exist
     void updateProject() async {
       try {
-        if (projectName.text.isEmpty ||
-            projectDesc.text.isEmpty ||
-            userDesig.text.isEmpty ||
-            userName.text.isEmpty ||
-            userEmail.text.isEmpty ||
-            bugName.text.isEmpty ||
-            bugStatus.text.isEmpty) {
+        if (projectName.text.isEmpty || projectDesc.text.isEmpty) {
           showErrorDialog(
             context,
-            'Oops, something went wrong',
+            'Did you forget to fill in the project name! 🤔',
             'Please fill in all the fields',
           );
         } else {
@@ -183,29 +239,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
             'team_name': groupName,
             'project_description': projectDesc.text
           }).select();
-          var uresponse = await widget.supabase.from('users').update({
-            'user_name': userName.text,
-            'user_designation': userDesig.text,
-            'user_email': userEmail.text,
-            'project_name': projectName.text,
-            'name': userName.text,
-          }).select();
-          var bresponse = await widget.supabase.from('bugs').update({
-            'bugs_name': bugName.text,
-            'bug_status': bugStatus.text,
-            'bugs_description': bugsDesc.text,
-            'project_name': projectName.text,
-            'update_date': formattedDate,
-          }).select();
 
           //clear the text fields after saving
           dispose();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
-          if (presponse.isNotEmpty ||
-              uresponse.isNotEmpty ||
-              bresponse.isNotEmpty) {
+          if (presponse.isNotEmpty) {
             showErrorDialog(context, 'Successfully added your project 🥳',
                 'Happy Coding, Don\'t forget to squash those bugs');
           } else {
@@ -232,10 +272,18 @@ class _UpdateScreenState extends State<UpdateScreen> {
         ),
         titleSpacing: 25,
         automaticallyImplyLeading: false,
-        leading: IconButton(onPressed: (){
-          Navigator.of(context).pop();
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoadingScreen(supabase: widget.supabase, screen: HomeScreen(supabase: widget.supabase,)),));
-        }, icon: Icon(Icons.fork_left_rounded)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => LoadingScreen(
+                    supabase: widget.supabase,
+                    screen: HomeScreen(
+                      supabase: widget.supabase,
+                    )),
+              ));
+            },
+            icon: const Icon(Icons.arrow_back_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -283,6 +331,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
             right: 200,
             maxLines: 10,
           ),
+          CTAButton(
+            text: 'Save',
+            onTap: updateProject,
+            left: 32,
+            right: width * 1 / 1.3,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           //User details starts from here
           const Padding(
             padding: EdgeInsets.only(top: 30, left: 32, bottom: 30),
@@ -325,9 +382,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
           ),
           CTAButton(
             text: 'Save',
-            onTap:updateUser,
-            // left: 32,
-            // right: width*1/3,
+            onTap: updateUser,
+            left: 32,
+            right: width * 1 / 1.3,
+          ),
+          const SizedBox(
+            height: 20,
           ),
           //bug details starts from here
           const Padding(
@@ -368,11 +428,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           const SizedBox(
             height: 30,
           ),
-           const CTAButton(
+          CTAButton(
             text: 'Save',
-            onTap:null,
-            // left: 32,
-            // right: width*1/3,
+            onTap: updateBugs,
+            left: 32,
+            right: width * 1 / 1.3,
           ),
           const SizedBox(
             height: 50,
