@@ -29,10 +29,10 @@ class _BugsSectionState extends State<BugsSection> {
           } else if (snapshot.hasError) {
             return showErrorDialog(context, 'Error in retreiving data');
           } else if (snapshot.data!.isEmpty) {
-            return Column(
+            return const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ListTile(
+               ListTile(
                   shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10))),
                   focusColor: whiteContainer,

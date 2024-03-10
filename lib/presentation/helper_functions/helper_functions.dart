@@ -8,7 +8,7 @@ import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/models/users_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
- showErrorDialog(BuildContext context, String message) {
+showErrorDialog(BuildContext context, String message) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -113,8 +113,9 @@ class HelperFunctions {
       return [];
     }
   }
+
   //chat retrieval function
-   Future<List<chats_model>> getChats(
+  Future<List<chats_model>> getChats(
     BuildContext context,
     SupabaseClient supabase,
     String selectedprojectname,
@@ -132,7 +133,7 @@ class HelperFunctions {
           .from('chats')
           .select()
           .eq('project_name', finalprojectname)
-          .order('chat');
+          .order('date');
 
       final project_chats =
           (response as List).map((json) => chats_model.fromJson(json)).toList();
@@ -141,5 +142,33 @@ class HelperFunctions {
       showErrorDialog(context, error.toString());
       return [];
     }
+  }
+
+  //Function to search a term in project table
+  Future<List<project>> searchInProjectTable(
+    // String tableName,
+    // String query,
+    // BuildContext context,
+    SupabaseClient supabase,
+  ) async {
+    String column1 = 'project_name';
+    String column2 = 'team_name';
+    //String column3 = 'project_description';
+
+    final response = await supabase.from('projects').select().or((builder) {
+          // Specify the columns you want to search across
+          builder.ilike(column1.toString(), 'project');
+          builder.ilike(column2.toString(), 'project');    //'%$query%'
+          // Add more columns as needed
+        } as String  );
+         final pres =
+          (response as List).map((json) => project.fromJson(json)).toList();
+    // .execute();
+
+    if (response.isEmpty) {
+      throw Exception('Error searching in  table: $pres');
+    }
+
+    return pres ;//as List<project>
   }
 }

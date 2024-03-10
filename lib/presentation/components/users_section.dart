@@ -1,10 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:project_management/presentation/screens/imports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../themes/themes.dart';
 
 class UsersSection extends StatefulWidget {
   const UsersSection({super.key});

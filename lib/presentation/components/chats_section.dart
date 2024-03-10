@@ -33,6 +33,7 @@ class _CommentsSectionState extends State<CommentsSection> {
 
   @override
   Widget build(BuildContext context) {
+    var obj=HelperFunctions();
     String projectName = localStorage['projectName'].toString();
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('dd-MM-yyyy').format(now);
@@ -62,6 +63,15 @@ class _CommentsSectionState extends State<CommentsSection> {
       );
     }
 
+    void getChatsAndRefresh()async{
+      
+                setState(() {
+                  obj.getChats(
+                context, widget.supabase, 'project');
+      
+    });
+
+    }
     //add the chat to the db
     void _handleSubmitted(String message) async {
       try {
@@ -72,50 +82,25 @@ class _CommentsSectionState extends State<CommentsSection> {
             'Please fill in all the fields',
           );
         } else {
-          //show loading screen
-          showDialog(
-            context: context,
-            builder: (context) => Container(
-              color: whiteBG,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Lottie.asset('lottie/ani1.json', height: 500),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    'Saving your data, this might take some time',
-                    style: GoogleFonts.dmSerifDisplay(
-                        fontWeight: FontWeight.w500, fontSize: 25),
-                  )
-                ],
-              ),
-            ),
-          );
-          //insert the chat
+         //insert into the char table
           var cresponse = await widget.supabase.from('chats').insert({
             'chat': message,
             'project_name': projectName,
             'date': formattedDate,
           });
+          
+         getChatsAndRefresh();
           clearTextField();
-          //pop the loading screen after loading
-
-          Navigator.of(context).pop();
-          if (cresponse.isNotEmpty) {
-            showErrorDialog(context, 'Successfully added the user 🥳', '');
-          } else {
-            showErrorDialog(context, 'Oops something went wrong 😭',
-                'Make sure you have an active internet connection');
-          }
+          
+          
+          
         }
       } catch (e) {
         showErrorDialog(context, 'Oops something went wrong 😭',
             'This was thrown $e');
       }
     }
+    
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -125,7 +110,8 @@ class _CommentsSectionState extends State<CommentsSection> {
         width: width - 80,
         height: height,
         child: FutureBuilder(
-            future: helperFunctions.getChats(
+            future: 
+            helperFunctions.getChats(
                 context, supabase, 'project'),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -178,41 +164,15 @@ class _CommentsSectionState extends State<CommentsSection> {
                       onSubmitted: (p0) =>
                           _handleSubmitted(_textController.text),
                       suffixIcon: IconButton(
-                          onPressed: () =>
-                              _handleSubmitted(_textController.text),
+                          onPressed: (){ 
+                              _handleSubmitted(_textController.text);
+                              
+                              },
                           icon: const Icon(Icons.send_rounded)),
                     ),
                   ],
                 );
-              } else if (snapshot.data!.isEmpty) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const ListTile(
-                      shape: BeveledRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      focusColor: whiteContainer,
-                      hoverColor: whiteContainer,
-                      autofocus: true,
-                      selected: true,
-                      selectedColor: black,
-                      selectedTileColor: whiteContainer,
-                      enabled: true,
-                      tileColor: whiteBG,
-                      leading: CircleAvatar(
-                          child: Text('😒', style: TextStyle(fontSize: 30))),
-                      title: Text(
-                        'Feels like everything\'s good ',
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      subtitle: Text(
-                        'No bugs found, 🥳 ',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
+              }  else {
                 return const Text('');
               }
             }));
