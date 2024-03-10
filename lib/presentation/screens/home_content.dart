@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/presentation/screens/update_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home_screen.dart';
@@ -83,12 +84,142 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
+  late String deletingUser = '';
+
+  Future<dynamic> deleteUser(selectedUser) async {
+    try {
+      showDialog(
+        context: context,
+        builder: (context) => Container(
+          color: whiteBG,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset('lottie/ani1.json', height: 500),
+              const SizedBox(
+                height: 50,
+              ),
+              Text(
+                'Crunching your data, this might take some time',
+                style: GoogleFonts.dmSerifDisplay(
+                    fontWeight: FontWeight.w500, fontSize: 25),
+              )
+            ],
+          ),
+        ),
+      );
+      await supabase.from('users').delete().eq('user_name', selectedUser);
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoadingScreen(
+            screen: HomeScreen(
+              supabase: widget.supabase,
+            ),
+            supabase: widget.supabase,
+          ),
+        ),
+      );
+    } catch (e) {
+      // showDialog(
+
+      // );
+    }
+  }
+
   late String firstproject;
-  void update(projectName) {
+  void updateProject(projectName, projectDescription) {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          UpdateScreen(supabase: supabase, projectName: projectName),
+      builder: (context) => UpdateScreen(
+        supabase: supabase,
+        primaryKey: projectName,
+        projectDescription: projectDescription,
+      ),
     ));
+  }
+
+  void updateUser(projectName, name, userDesignation, userName, userEmail,
+      BuildContext context) {
+    TextEditingController userController =
+        TextEditingController(text: userName);
+    TextEditingController userDesignationController =
+        TextEditingController(text: userDesignation);
+    TextEditingController nameController = TextEditingController(text: name);
+    TextEditingController emailController =
+        TextEditingController(text: userEmail);
+    TextEditingController projectController =
+        TextEditingController(text: projectName);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update User Details'),
+        content: SizedBox(
+          width: 500,
+          height: 460,
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Project',
+                controller: projectController,
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Username',
+                controller: userController,
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Name',
+                controller: nameController,
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Email',
+                controller: emailController,
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Designation',
+                controller: userDesignationController,
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              CTAButton(
+                text: 'Save',
+                onTap: () async {
+                  try {
+                    await widget.supabase.from('users').upsert({
+                      'name': userController.text.toString(),
+                      'user_name': nameController.text.toString(),
+                      'user_designation':
+                          userDesignationController.text.toString(),
+                      'user_email': emailController.text.toString(),
+                      'project_name': projectController.text.toString(),
+                    });
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    print('Update user error: $e');
+                  }
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -159,8 +290,6 @@ class _HomeContentState extends State<HomeContent> {
                                   context, projects.projectName, index);
                               localStorage['projectName'] =
                                   projects.projectName.toString();
-                              var se = localStorage['projectName'];
-                              print('Project name saved to local $se');
                             },
                             enabled: true,
                             tileColor: whiteBG,
@@ -176,8 +305,9 @@ class _HomeContentState extends State<HomeContent> {
                               child: Row(
                                 children: [
                                   IconButton(
-                                      onPressed: () =>
-                                          update(projects.projectName),
+                                      onPressed: () => updateProject(
+                                          projects.projectName,
+                                          projects.projectDescription),
                                       icon: const Icon(
                                         Icons.edit_rounded,
                                         size: 20,
@@ -251,25 +381,52 @@ class _HomeContentState extends State<HomeContent> {
                   itemBuilder: (context, index) {
                     final userdata = data[index];
                     return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 5, right: 5, bottom: 10),
-                      child: ListTile(
-                        selectedColor: black,
-                        shape: const BeveledRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        selected: true,
-                        selectedTileColor: whiteContainer,
-                        leading: const CircleAvatar(
-                            foregroundImage: AssetImage('avatars/man.png')),
-                        title: Text('${userdata.username}'),
-                        subtitle: Text(
-                          '${userdata.userDesignation}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        horizontalTitleGap: 10,
-                      ),
-                    );
+                        padding: const EdgeInsets.only(
+                            left: 5, right: 5, bottom: 10),
+                        child: ListTile(
+                          selectedColor: black,
+                          shape: const BeveledRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          selected: true,
+                          selectedTileColor: whiteContainer,
+                          leading: const CircleAvatar(
+                              foregroundImage: AssetImage('avatars/man.png')),
+                          title: Text('${userdata.name}'),
+                          subtitle: Text(
+                            '${userdata.userDesignation}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          horizontalTitleGap: 10,
+                          trailing: SizedBox(
+                            width: 80,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () => updateUser(
+                                        userdata.projectName,
+                                        userdata.name,
+                                        userdata.userDesignation,
+                                        userdata.userName,
+                                        userdata.userEmail,
+                                        context),
+                                    icon: const Icon(
+                                      Icons.edit_rounded,
+                                      size: 20,
+                                      color: black,
+                                    )),
+                                IconButton(
+                                    onPressed: () =>
+                                        deleteUser(userdata.userName),
+                                    icon: const Icon(
+                                      Icons.delete_rounded,
+                                      size: 20,
+                                      color: black,
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ));
                   },
                   itemCount: data!.length,
                 );

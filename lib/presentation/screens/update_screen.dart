@@ -7,9 +7,14 @@ import 'imports.dart';
 
 class UpdateScreen extends StatefulWidget {
   final SupabaseClient supabase;
-  final String projectName;
+  final String projectDescription;
+  final String primaryKey;
+
   const UpdateScreen(
-      {super.key, required this.supabase, required this.projectName});
+      {super.key,
+      required this.supabase,
+      required this.primaryKey,
+      required this.projectDescription});
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
@@ -20,9 +25,10 @@ class _UpdateScreenState extends State<UpdateScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     TextEditingController projectName =
-        TextEditingController(text: widget.projectName);
+        TextEditingController(text: widget.primaryKey);
 
-    TextEditingController projectDesc = TextEditingController();
+    TextEditingController projectDesc =
+        TextEditingController(text: widget.projectDescription);
 
     TextEditingController userName = TextEditingController();
     TextEditingController name = TextEditingController();
@@ -36,17 +42,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
     TextEditingController bugStatus = TextEditingController();
 
     TextEditingController bugsDesc = TextEditingController();
-
-    void clearTextField() {
-      projectDesc.clear();
-      userName.clear();
-      userEmail.clear();
-      userDesig.clear();
-      name.clear();
-      bugName.clear();
-      bugsDesc.clear();
-      bugStatus.clear();
-    }
 
     //fetch the date
     DateTime now = DateTime.now();
@@ -123,8 +118,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
             'project_name': projectName.text,
             'name': userName.text,
           }).select();
-          //clear the text fields after saving
-          clearTextField();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
@@ -183,8 +176,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
             'update_date': formattedDate,
           }).select();
 
-          //clear the text fields after saving
-          clearTextField();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
@@ -233,9 +224,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          var presponse = await widget.supabase.from('projects').update({
+          var presponse = await widget.supabase.from('projects').upsert({
             'project_name': projectName.text,
-            'date_created': formattedDate,
+            'date_created': formattedDate.toString(),
             'team_name': groupName,
             'project_description': projectDesc.text
           }).select();
@@ -318,7 +309,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 0, left: 35, bottom: 10),
             child: Text(
-              'Creation Date: $formattedDate',
+              'Updation Date: $formattedDate',
               style: const TextStyle(fontSize: 15),
             ),
           ),
