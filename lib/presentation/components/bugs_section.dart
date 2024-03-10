@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:project_management/presentation/helper_functions/helper_functions.dart';
 import 'package:project_management/presentation/themes/themes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,9 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class BugsSection extends StatefulWidget {
   final String projectname;
   const BugsSection({
-    Key? key,
+    super.key,
     required this.projectname, //the project name selected by user
-  }) : super(key: key);
+  });
 
   @override
   State<BugsSection> createState() => _BugsSectionState();
@@ -32,25 +31,25 @@ class _BugsSectionState extends State<BugsSection> {
             return const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               ListTile(
+                ListTile(
                   shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10))),
                   focusColor: whiteContainer,
                   hoverColor: whiteContainer,
                   autofocus: true,
-                  selected: true,
+                  selected: false,
                   selectedColor: black,
                   selectedTileColor: whiteContainer,
                   enabled: true,
                   tileColor: whiteBG,
                   leading: CircleAvatar(
-                      child: Text('😒', style: TextStyle(fontSize: 30))),
+                      child: Text('🥳', style: TextStyle(fontSize: 30))),
                   title: Text(
-                    'Feels like everything\'s good ',
+                    'No bugs found, 🥳 ',
                     style: TextStyle(fontSize: 15),
                   ),
-                  subtitle:Text(
-                    'No bugs found, 🥳 ',
+                  subtitle: Text(
+                    'Feels like everything\'s good ',
                     style: TextStyle(fontSize: 12),
                   ),
                 ),
@@ -61,28 +60,50 @@ class _BugsSectionState extends State<BugsSection> {
             return ListView.builder(
               itemBuilder: (context, index) {
                 final bug = bugs[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text('${bug.bugsName}'),
-                      subtitle: Text(
-                        'Bug status: ${bug.bugStatus}',
-                        style: const TextStyle(fontSize: 12),
+                return Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        shape: const BeveledRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        focusColor: whiteContainer,
+                        hoverColor: whiteContainer,
+                        autofocus: true,
+                        selectedTileColor: whiteContainer,
+                        selectedColor: black,
+                        selected: true,
+                        title: Text('${bug.bugsName}'),
+                        subtitle: Text(
+                          'Bug status: ${bug.bugStatus}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        trailing: Text(
+                          'created date: ${bug.dateCreated}',
+                        ),
+                        horizontalTitleGap: 10,
                       ),
-                      trailing: Text(
-                        'created date: ${bug.dateCreated}',
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 5, top: 5),
+                        child: Divider(),
                       ),
-                      horizontalTitleGap: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        '${bug.bugsDescription}',
-                        softWrap: true,
-                        textAlign: TextAlign.start,
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 5, top: 10),
+                        child: Text('Description: '),
                       ),
-                    )
-                  ],
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 5, right: 5, top: 10),
+                        child: Text(
+                          '${bug.bugsDescription}',
+                          softWrap: true,
+                          textAlign: TextAlign.start,
+                        ),
+                      )
+                    ],
+                  ),
                 );
               },
               itemCount: bugs!.length,
