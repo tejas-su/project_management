@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:html';
+import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:project_management/models/bugs_model.dart';
 import 'package:project_management/models/chats_model.dart';
@@ -146,29 +147,48 @@ class HelperFunctions {
 
   //Function to search a term in project table
   Future<List<project>> searchInProjectTable(
-    // String tableName,
-    // String query,
-    // BuildContext context,
+    var column1,
+    String tableName,
+    String query,
+    BuildContext context,
     SupabaseClient supabase,
   ) async {
-    String column1 = 'project_name';
-    String column2 = 'team_name';
-    //String column3 = 'project_description';
 
-    final response = await supabase.from('projects').select().or((builder) {
-          // Specify the columns you want to search across
-          builder.ilike(column1.toString(), 'project');
-          builder.ilike(column2.toString(), 'project');    //'%$query%'
-          // Add more columns as needed
-        } as String  );
-         final pres =
-          (response as List).map((json) => project.fromJson(json)).toList();
-    // .execute();
+    //using fetched first project name  from local storage as default search
+    //if query is empty by default search for first project
+    final searchquery = query.isEmpty ? projectName : query;
 
-    if (response.isEmpty) {
-      throw Exception('Error searching in  table: $pres');
+    //var column1 = project_name.toString();
+    //var column2 = 'team_name';
+    //var column3 = 'project_description';
+    try {
+      final response = await supabase.from(tableName).select().or((builder) => builder
+            ..ilike(column1, searchquery) as String
+            // ..ilike(column2, '%$searchquery%').toString()
+            // ..ilike(column3, '%$searchquery%').toString()
+        );
+      //       // Specify the columns you want to search across
+      //       builder.ilike(column1.toString(), '%$searchquery%');
+      //       builder.ilike(column2.toString(), '%$searchquery%'); //format - '%$query%'
+      //       builder.ilike(column3.toString(), '%$searchquery%');
+      //       // Add more columns as needed
+      //     }.toString() );
+
+
+
+
+      final chatresponse =
+          (response.first as List).map((json) => project.fromJson(json)).toList();
+      // .execute();
+
+      // if (response.) {
+      //   throw Exception('Error searching in  table: $pres');
+      // }
+      return chatresponse; //as List<project>
+    } catch (error) {
+      showErrorDialog(context, error.toString());
+      //Navigator.of(context).pop();
+      return [];
     }
-
-    return pres ;//as List<project>
   }
 }
