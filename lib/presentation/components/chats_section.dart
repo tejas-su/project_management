@@ -34,8 +34,12 @@ class _CommentsSectionState extends State<CommentsSection> {
   @override
   Widget build(BuildContext context) {
     var obj=HelperFunctions();
-    String projectName = localStorage['projectName'].toString();
+        String projectName = localStorage['projectName'].toString();
+    //first project name if nothing is selected
+    String firstProject = localStorage['firstProject'].toString();
+    //date current
     DateTime now = DateTime.now();
+    //formatted date in dd-mm-yyyy
     String formattedDate = DateFormat('dd-MM-yyyy').format(now);
 
     void clearTextField() {
@@ -65,16 +69,20 @@ class _CommentsSectionState extends State<CommentsSection> {
 
     void getChatsAndRefresh()async{
       
-                setState(() {
-                  obj.getChats(
-                context, widget.supabase, 'project');
-      
-    });
+      setState(() {
+        obj.getChats(
+                context, widget.supabase, projectName);
+
+      });
 
     }
+
     //add the chat to the db
     void _handleSubmitted(String message) async {
       try {
+        if (projectName.isEmpty) {
+          projectName = firstProject;
+        }
         if (message.isEmpty) {
           showErrorDialog(
             context,
@@ -82,16 +90,16 @@ class _CommentsSectionState extends State<CommentsSection> {
             'Please fill in all the fields',
           );
         } else {
-         //insert into the char table
+          //insert into the char table
           var cresponse = await widget.supabase.from('chats').insert({
             'chat': message,
             'project_name': projectName,
             'date': formattedDate,
           });
-          
-         getChatsAndRefresh();
+
+          getChatsAndRefresh();
           clearTextField();
-          
+
           
           
         }
@@ -100,7 +108,7 @@ class _CommentsSectionState extends State<CommentsSection> {
             'This was thrown $e');
       }
     }
-    
+
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -164,10 +172,10 @@ class _CommentsSectionState extends State<CommentsSection> {
                       onSubmitted: (p0) =>
                           _handleSubmitted(_textController.text),
                       suffixIcon: IconButton(
-                          onPressed: (){ 
-                              _handleSubmitted(_textController.text);
-                              
-                              },
+                          onPressed: (){
+                            _handleSubmitted(_textController.text);
+
+                          },
                           icon: const Icon(Icons.send_rounded)),
                     ),
                   ],

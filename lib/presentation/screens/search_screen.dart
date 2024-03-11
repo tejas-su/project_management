@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/presentation/screens/imports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,12 +18,12 @@ class _SearchScreenState extends State<SearchScreen>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    final supabase = Supabase.instance.client;
 
     HelperFunctions helperFunctions = HelperFunctions();
 
     //search term controller
-    TextEditingController search_term = TextEditingController();
+    TextEditingController searchTerm = TextEditingController();
+    late String queryToFutureBuilder;
     TabController tabcontroller = TabController(length: 1, vsync: this);
     List images = [
       "assets/avatars/man (1).png",
@@ -32,10 +33,7 @@ class _SearchScreenState extends State<SearchScreen>
       "assets/avatars/man (5).png",
     ];
 
-    search(String tableName, String query, context, supabase) {
-     return helperFunctions.searchInProjectTable('project_name',tabcontroller.toString(),
-          search_term.text, context, supabase); //tableName, query, context,
-    }
+   
 
     return Row(
       children: [
@@ -54,23 +52,43 @@ class _SearchScreenState extends State<SearchScreen>
                           borderRadius: BorderRadius.circular(12),
                           color: whiteContainer,
                         ),
-                        child: TextField(
-                          controller: search_term,
-                          // onChanged: (value) {
-                            
-                          decoration: const InputDecoration(
-                            hintText: "Search",
-                            prefixIcon: Icon(Icons.search),
-                            border: InputBorder.none,
+                        child: Container(
+                          width: 500,
+                          child: TextField(
+                            controller: searchTerm,
+                            //  onChanged: (value) {
+                            //   search('users', search_term.text, context, widget.supabase);
+                            //  },  
+                            decoration: const InputDecoration(
+                              hintText: "Search",
+                              prefixIcon: Icon(Icons.search),
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
                       )
-                      ),
-                      //  CTAButton(text: 'search',
-                      // onTap: () => search(tabcontroller.toString(), search_term.toString(),context, widget.supabase)
-                      // )
+                      ),                    
+                      
                 ],
               ),
+               Container(
+                        // width: 5,
+                        // height: 5,
+                         child: CTAButton(
+                          
+                          text: 'search',
+                                              //  onTap: () => search(tabcontroller.toString(), search_term.toString(),context, widget.supabase)
+                                              onTap: (){
+setState(() {
+           queryToFutureBuilder=searchTerm.text;
+            print('updated query to search fn  :$queryToFutureBuilder');
+            helperFunctions.searchInProjectTable(tabcontroller.toString(),searchTerm.text,context,widget.supabase);
+          });
+                                              } 
+                                                
+                                              
+                                               ),
+                       ),
               TabBar(
                   dividerColor: Colors.transparent,
                   indicatorSize: TabBarIndicatorSize.tab,
@@ -141,85 +159,28 @@ class _SearchScreenState extends State<SearchScreen>
                   // ),
                   //Projects  screen
                   FutureBuilder(
+                   // key: ValueKey<String>('project_search$projectName'),
                       future: helperFunctions.searchInProjectTable(
-                        'project_name',
-                        tabcontroller.toString(),
-                        search_term.toString(),
+                        'users',
+                        //tabcontroller.toString(),
+                        queryToFutureBuilder='',
+                        //queryToFutureBuilder,
+                      //  search_term.text,
                         context,
                         widget.supabase,
                       ), //'projects',
                       // 'project',
                       // context,
                       builder:
-                          (context, AsyncSnapshot<List<project>> snapshot) {
+                          (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Lottie.asset('lottie/ani1.json', height: 500);
                         } else if (snapshot.hasError) {
                           return showErrorDialog(
                               context, 'error in retriewing data');
-                        } else if (snapshot.data!.isEmpty) {
-                          return Text('data');
-                          // return const Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [
-                          //     ListTile(
-                          //       shape: BeveledRectangleBorder(
-                          //           borderRadius:
-                          //               BorderRadius.all(Radius.circular(10))),
-                          //       focusColor: whiteContainer,
-                          //       hoverColor: whiteContainer,
-                          //       autofocus: true,
-                          //       selected: true,
-                          //       selectedColor: black,
-                          //       selectedTileColor: whiteContainer,
-                          //       enabled: true,
-                          //       tileColor: whiteBG,
-                          //       leading: CircleAvatar(
-                          //           child: Text('😒',
-                          //               style: TextStyle(fontSize: 30))),
-                          //       title: Text(
-                          //         'Feels like everything\'s good ',
-                          //         style: TextStyle(fontSize: 15),
-                          //       ),
-                          //       subtitle: Text(
-                          //         'No bugs found, 🥳 ',
-                          //         style: TextStyle(fontSize: 12),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // );
-                        } else if (snapshot.data!.isEmpty) {
-                          return const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                shape: BeveledRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                focusColor: whiteContainer,
-                                hoverColor: whiteContainer,
-                                autofocus: true,
-                                selected: true,
-                                selectedColor: black,
-                                selectedTileColor: whiteContainer,
-                                enabled: true,
-                                tileColor: whiteBG,
-                                leading: CircleAvatar(
-                                    child: Text('😒',
-                                        style: TextStyle(fontSize: 30))),
-                                title: Text(
-                                  'Feels like everything\'s good ',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                subtitle: Text(
-                                  'No bugs found, 🥳 ',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else if (snapshot.hasData) {
+                        }
+                        else  if (snapshot.hasData){
                           final data = snapshot.data;
                           return SizedBox(
                             child: GridView.builder(
@@ -249,15 +210,15 @@ class _SearchScreenState extends State<SearchScreen>
                                           padding: const EdgeInsets.only(
                                               top: 10.0, left: 4, bottom: 2),
                                           child: ListTile(
-                                            // leading: CircleAvatar(
-                                            //   radius: 30,
-                                            //   child: Image.asset(
-                                            //     images[index],
-                                            //   ),
-                                            // ), // Iterate through rows
-
+                                            leading: CircleAvatar(
+                                              radius: 30,
+                                              child: Image.asset(
+                                                images[index],
+                                              ),
+                                            ), // Iterate through rows
+                  
                                             title: Text(
-                                                "Team :${searchdata.projectName} "),
+                                                "Team :${searchdata.username} "),
                                             //subtitle: const Text("team lead"),
                                           ),
                                         ),
@@ -276,29 +237,96 @@ class _SearchScreenState extends State<SearchScreen>
                                   );
                                 }),
                           );
-                        } else {
-                          throw e;
-                          // const ListTile(
-                          //   shape: const BeveledRectangleBorder(
-                          //       borderRadius: BorderRadius.all(Radius.circular(10))),
-                          //   focusColor: whiteContainer,
-                          //   hoverColor: whiteContainer,
-                          //   autofocus: true,
-                          //   //selected: selected,
-                          //   selectedColor: black,
-                          //   selectedTileColor: whiteContainer,
-                          //   enabled: true,
-                          //   tileColor: whiteBG,
-                          //   leading: const CircleAvatar(
-                          //       child: Text('😒',
-                          //       style: TextStyle(fontSize: 30))),
-                          //   title: const Text('Add a project',
-                          //     style:TextStyle(fontSize: 12),
-                          //   ),
+                        }
+                        
+                         else if (snapshot.data!.isEmpty ) {
+                          return Text('No data found');
+                          // return const Column(
+                          //   crossAxisAlignment: CrossAxisAlignment.start,
+                          //   children: [ 
+                          //     ListTile(
+                          //       shape: BeveledRectangleBorder(
+                          //           borderRadius:
+                          //               BorderRadius.all(Radius.circular(10))),
+                          //       focusColor: whiteContainer,
+                          //       hoverColor: whiteContainer,
+                          //       autofocus: true,
+                          //       selected: true,
+                          //       selectedColor: black,
+                          //       selectedTileColor: whiteContainer,
+                          //       enabled: true,
+                          //       tileColor: whiteBG,
+                          //       leading: CircleAvatar(
+                          //           child: Text('😒',
+                          //               style: TextStyle(fontSize: 30))),
+                          //       title: Text(
+                          //         'Feels like everything\'s good ',
+                          //         style: TextStyle(fontSize: 15),
+                          //       ),
+                          //       subtitle: Text(
+                          //         'No bugs found, 🥳 ',
+                          //         style: TextStyle(fontSize: 12),
+                          //       ),
+                          //     ),
+                          //   ],
                           // );
                         }
+                        //  else if (snapshot.data!.isEmpty) {
+                        //   return const Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       ListTile(
+                        //         shape: BeveledRectangleBorder(
+                        //             borderRadius:
+                        //                 BorderRadius.all(Radius.circular(10))),
+                        //         focusColor: whiteContainer,
+                        //         hoverColor: whiteContainer,
+                        //         autofocus: true,
+                        //         selected: true,
+                        //         selectedColor: black,
+                        //         selectedTileColor: whiteContainer,
+                        //         enabled: true,
+                        //         tileColor: whiteBG,
+                        //         leading: CircleAvatar(
+                        //             child: Text('😒',
+                        //                 style: TextStyle(fontSize: 30))),
+                        //         title: Text(
+                        //           'Feels like everything\'s good ',
+                        //           style: TextStyle(fontSize: 15),
+                        //         ),
+                        //         subtitle: Text(
+                        //           'No bugs found, 🥳 ',
+                        //           style: TextStyle(fontSize: 12),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   );
+                        // }
+                        
+                         
+                        else {
+                          return Text('');}
+                        //   // const ListTile(
+                        //   //   shape: const BeveledRectangleBorder(
+                        //   //       borderRadius: BorderRadius.all(Radius.circular(10))),
+                        //   //   focusColor: whiteContainer,
+                        //   //   hoverColor: whiteContainer,
+                        //   //   autofocus: true,
+                        //   //   //selected: selected,
+                        //   //   selectedColor: black,
+                        //   //   selectedTileColor: whiteContainer,
+                        //   //   enabled: true,
+                        //   //   tileColor: whiteBG,
+                        //   //   leading: const CircleAvatar(
+                        //   //       child: Text('😒',
+                        //   //       style: TextStyle(fontSize: 30))),
+                        //   //   title: const Text('Add a project',
+                        //   //     style:TextStyle(fontSize: 12),
+                        //   //   ),
+                        //   // );
+                        // }
                       }
-
+                  
                       // //!Projects with Bugs screen
                       // SizedBox(
                       //   child: GridView.builder(
@@ -364,56 +392,56 @@ class _SearchScreenState extends State<SearchScreen>
           ),
         ),
 
-        //!Description
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-              width: 700,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: whiteContainer,
-              ),
-              child: Column(children: [
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: CircleAvatar(
-                          child: Image.asset(
-                            "assets/avatars/man (1).png",
-                          ),
-                        ),
-                        title: const Text(
-                          "User name",
-                          style: TextStyle(fontSize: 25),
-                        ),
-                        subtitle: const Text("user_email"),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: SizedBox(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("All details..."),
-                              Text("user_designation"),
-                              Text("team_name"),
-                              Text("Project: project_name"),
-                              Text("Project: project_description"),
-                              Text("Bug : Bug_description"),
-                              Text("Bug Description:"),
-                              Text(
-                                  "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description"),
-                              Text("Bug status")
-                            ],
-                          ),
-                        ),
-                      ),
-                    ]),
-              ])),
-        )
+        // //!Description
+        // Padding(
+        //   padding: const EdgeInsets.all(16.0),
+        //   child: Container(
+        //       width: 700,
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(20),
+        //         color: whiteContainer,
+        //       ),
+        //       child: Column(children: [
+        //         Column(
+        //             mainAxisAlignment: MainAxisAlignment.start,
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [
+        //               ListTile(
+        //                 leading: CircleAvatar(
+        //                   child: Image.asset(
+        //                     "assets/avatars/man (1).png",
+        //                   ),
+        //                 ),
+        //                 title: const Text(
+        //                   "User name",
+        //                   style: TextStyle(fontSize: 25),
+        //                 ),
+        //                 subtitle: const Text("user_email"),
+        //               ),
+        //               const Padding(
+        //                 padding: EdgeInsets.all(16.0),
+        //                 child: SizedBox(
+        //                   child: Column(
+        //                     mainAxisAlignment: MainAxisAlignment.start,
+        //                     crossAxisAlignment: CrossAxisAlignment.start,
+        //                     children: [
+        //                       Text("All details..."),
+        //                       Text("user_designation"),
+        //                       Text("team_name"),
+        //                       Text("Project: project_name"),
+        //                       Text("Project: project_description"),
+        //                       Text("Bug : Bug_description"),
+        //                       Text("Bug Description:"),
+        //                       Text(
+        //                           "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description"),
+        //                       Text("Bug status")
+        //                     ],
+        //                   ),
+        //                 ),
+        //               ),
+        //             ]),
+        //       ])),
+        // )
       ],
     );
   }
