@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/home_screen.dart';
+import 'package:project_management/app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'imports.dart';
 

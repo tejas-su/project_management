@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project_management/presentation/components/users_section.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'imports.dart';
+import 'presentation/screens/imports.dart';
 
 class HomeScreen extends StatefulWidget {
   final SupabaseClient supabase;
@@ -38,10 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeContent(
         supabase: widget.supabase,
       ),
-      CommentsSection(supabase: widget.supabase,),
-      const UsersScreen(),
+      CommentsSection(
+        supabase: widget.supabase,
+      ),
+      const UsersSection(),
       const ProjectsScreen(),
-      SearchScreen(supabase:widget.supabase),
+      SearchScreen(supabase: widget.supabase),
       AddNewScreen(
         supabase: widget.supabase,
       ),
@@ -63,15 +66,16 @@ class _HomeScreenState extends State<HomeScreen> {
           //refresh button
           IconButton(
               onPressed: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => LoadingScreen(
-                    text: 'Crunching your data, This might take some time 😴',
-                    screen: HomeScreen(
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => LoadingScreen(
+                      text: 'Crunching your data, This might take some time 😴',
+                      screen: HomeScreen(
+                        supabase: widget.supabase,
+                      ),
                       supabase: widget.supabase,
                     ),
-                    supabase: widget.supabase,
                   ),
-                ),
                 );
               },
               icon: const Icon(

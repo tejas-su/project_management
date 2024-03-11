@@ -1,10 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/presentation/screens/update_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'home_screen.dart';
+import '../../app.dart';
 import 'imports.dart';
 
 class HomeContent extends StatefulWidget {
