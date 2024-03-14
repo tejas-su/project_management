@@ -1,11 +1,8 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/imports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../models/users_model.dart';
-
+import 'imports.dart';
 class SearchScreen extends StatefulWidget {
   final SupabaseClient supabase;
   const SearchScreen({super.key, required this.supabase});
@@ -31,7 +28,7 @@ class _SearchScreenState extends State<SearchScreen>
       setState(() {
         searchResults = results.cast<users>();
       });
-      print('Search Results Updated as :${searchResults[0].userName}');
+      
     }
 
 @override
@@ -139,8 +136,7 @@ void initState() {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           final searchdata = searchResults[0];
-                          print(
-                              'First user name retrieved in gried view buildr:${searchdata}');
+                          
 
                           return Container(
                             margin: const EdgeInsets.all(25),
@@ -156,12 +152,12 @@ void initState() {
                                     leading: CircleAvatar(
                                       radius: 30,
                                       child: Image.asset(
-                                        images[index],
+                                        images[Random().nextInt(5)],
                                       ),
                                     ), // Iterate through rows
 
                                     title:
-                                        Text("Team: ${searchdata} "),
+                                        Text("Team: ${searchdata.name} "),
                                     //subtitle: const Text("team lead"),
                                   ),
                                 ),
@@ -182,7 +178,7 @@ void initState() {
                         else
                          Container(
                           alignment: Alignment.center,
-                          child: Text("No results found"),)
+                          child: const Text("No results found"),)
             ]))
           ]))
     ]);
