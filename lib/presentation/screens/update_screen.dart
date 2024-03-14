@@ -290,7 +290,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     )),
               ));
             },
-            icon: Icon(Icons.fork_left_rounded)),
+            icon: const Icon(Icons.fork_left_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
