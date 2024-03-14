@@ -296,7 +296,9 @@ class _HomeContentState extends State<HomeContent> {
                                 foregroundImage: AssetImage('avatars/man.png')),
                             title: Text('${projects.projectName}'),
                             subtitle: Text(
-                              '${projects.projectDescription}',
+                              maxLines: 2,
+                              '${projects.projectDescription}...',
+                              softWrap: true,
                               style: const TextStyle(fontSize: 12),
                             ),
                             trailing: SizedBox(

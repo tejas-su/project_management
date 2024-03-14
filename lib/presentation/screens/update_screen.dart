@@ -224,12 +224,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          var presponse = await widget.supabase.from('projects').upsert({
-            'project_name': projectName.text,
-            'date_created': formattedDate.toString(),
-            'team_name': groupName,
-            'project_description': projectDesc.text
-          }).select();
+          var presponse = await widget.supabase
+              .from('projects')
+              .update({
+                'date_created': formattedDate.toString(),
+                'team_name': groupName,
+                'project_description': projectDesc.text
+              })
+              .eq('project_name', projectName.text.toString())
+              .select();
 
           //clear the text fields after saving
           dispose();
@@ -283,7 +286,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 32, left: 32, bottom: 0),
             child: Text(
-              "Team: $groupName",
+              "Team $groupName currently working on ${projectName.text}",
               style: GoogleFonts.dmSerifDisplay(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -298,20 +301,16 @@ class _UpdateScreenState extends State<UpdateScreen> {
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
-          InputTextField(
-            controller: projectName,
-            hintText: 'Enter Project Name',
-            color: whiteContainer,
-            bottom: 20,
-            left: 32,
-            right: 700,
-          ),
+
           Padding(
             padding: const EdgeInsets.only(top: 0, left: 35, bottom: 10),
             child: Text(
               'Updation Date: $formattedDate',
               style: const TextStyle(fontSize: 15),
             ),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           InputTextField(
             hintText: 'Enter Project Description',
