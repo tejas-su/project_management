@@ -72,13 +72,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
       );
     }
 
-    //function to update user
+    //function to update the data to the database
     void updateUser() async {
       try {
         if (userDesig.text.isEmpty ||
             userName.text.isEmpty ||
-            userEmail.text.isEmpty ||
-            projectName.text.isEmpty) {
+            userEmail.text.isEmpty) {
           showErrorDialog(
             context,
             'Oops, something went wrong',
@@ -133,10 +132,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
       }
     }
 
-    //function to update the bugs
-    void updateBugs() async {
+    void updateProject() async {
       try {
         if (projectName.text.isEmpty ||
+            projectDesc.text.isEmpty ||
+            userDesig.text.isEmpty ||
+            userName.text.isEmpty ||
+            userEmail.text.isEmpty ||
             bugName.text.isEmpty ||
             bugStatus.text.isEmpty) {
           showErrorDialog(
@@ -167,8 +169,20 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          //update user
-          var bresponse = await widget.supabase.from('bugs').upsert({
+          var presponse = await widget.supabase.from('projects').update({
+            'project_name': projectName.text,
+            'date_created': formattedDate,
+            'team_name': groupName,
+            'project_description': projectDesc.text
+          }).select();
+          var uresponse = await widget.supabase.from('users').update({
+            'user_name': userName.text,
+            'user_designation': userDesig.text,
+            'user_email': userEmail.text,
+            'project_name': projectName.text,
+            'name': userName.text,
+          }).select();
+          var bresponse = await widget.supabase.from('bugs').update({
             'bugs_name': bugName.text,
             'bug_status': bugStatus.text,
             'bugs_description': bugsDesc.text,
@@ -193,7 +207,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
 
 //update or insert the project if it does not exist
-    void updateProject() async {
+    void UpdateProject() async {
       try {
         if (projectName.text.isEmpty || projectDesc.text.isEmpty) {
           showErrorDialog(
@@ -236,7 +250,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
-          if (presponse.isNotEmpty) {
+          if (presponse.isNotEmpty ||
+              presponse.isNotEmpty ||
+              presponse.isNotEmpty) {
             showErrorDialog(context, 'Successfully added your project 🥳',
                 'Happy Coding, Don\'t forget to squash those bugs');
           } else {
@@ -274,7 +290,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     )),
               ));
             },
-            icon: const Icon(Icons.arrow_back_rounded)),
+            icon: Icon(Icons.fork_left_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -374,11 +390,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
           CTAButton(
             text: 'Save',
             onTap: updateUser,
-            left: 32,
-            right: width * 1 / 1.3,
-          ),
-          const SizedBox(
-            height: 20,
+            // left: 32,
+            // right: width*1/3,
           ),
           //bug details starts from here
           const Padding(
@@ -419,11 +432,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           const SizedBox(
             height: 30,
           ),
-          CTAButton(
+          const CTAButton(
             text: 'Save',
-            onTap: updateBugs,
-            left: 32,
-            right: width * 1 / 1.3,
+            onTap: null,
+            // left: 32,
+            // right: width*1/3,
           ),
           const SizedBox(
             height: 50,

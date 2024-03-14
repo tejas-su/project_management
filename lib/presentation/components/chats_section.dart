@@ -33,9 +33,8 @@ class _CommentsSectionState extends State<CommentsSection> {
 
   @override
   Widget build(BuildContext context) {
-    var obj = HelperFunctions();
-    //selected project name
-    String projectName = localStorage['projectName'].toString();
+    var obj=HelperFunctions();
+        String projectName = localStorage['projectName'].toString();
     //first project name if nothing is selected
     String firstProject = localStorage['firstProject'].toString();
     //date current
@@ -68,10 +67,14 @@ class _CommentsSectionState extends State<CommentsSection> {
       );
     }
 
-    void getChatsAndRefresh() async {
+    void getChatsAndRefresh()async{
+      
       setState(() {
-        obj.getChats(context, widget.supabase, 'project');
+        obj.getChats(
+                context, widget.supabase, projectName);
+
       });
+
     }
 
     //add the chat to the db
@@ -90,18 +93,22 @@ class _CommentsSectionState extends State<CommentsSection> {
           //insert into the char table
           await widget.supabase.from('chats').insert({
             'chat': message,
-            'project_name': firstProject,
+            'project_name': projectName,
             'date': formattedDate,
           });
 
           getChatsAndRefresh();
           clearTextField();
+
+          
+          
         }
       } catch (e) {
-        showErrorDialog(
-            context, 'Oops something went wrong 😭', 'This was thrown $e');
+        showErrorDialog(context, 'Oops something went wrong 😭',
+            'This was thrown $e');
       }
     }
+
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -111,21 +118,23 @@ class _CommentsSectionState extends State<CommentsSection> {
         width: width - 80,
         height: height,
         child: FutureBuilder(
-            future: helperFunctions.getChats(context, supabase, 'project'),
+            future: 
+            helperFunctions.getChats(
+                context, supabase, 'project'),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return const Center(child: Text('Something went wrong'));
               } else if (snapshot.hasData) {
-                final data = snapshot.data;
+                final data = snapshot.data ;
                 return Column(
                   children: <Widget>[
                     Expanded(
                       child: ListView.builder(
-                        itemCount: data!.length,
+                        itemCount:data!.length,
                         itemBuilder: (context, index) {
-                          final chatdata = data[index];
+                          final chatdata = data[index] ;
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ListTile(
@@ -163,14 +172,15 @@ class _CommentsSectionState extends State<CommentsSection> {
                       onSubmitted: (p0) =>
                           _handleSubmitted(_textController.text),
                       suffixIcon: IconButton(
-                          onPressed: () {
+                          onPressed: (){
                             _handleSubmitted(_textController.text);
+
                           },
                           icon: const Icon(Icons.send_rounded)),
                     ),
                   ],
                 );
-              } else {
+              }  else {
                 return const Text('');
               }
             }));
