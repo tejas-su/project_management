@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final SupabaseClient supabase;
+  const SearchScreen({super.key, required this.supabase});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
