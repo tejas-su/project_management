@@ -45,15 +45,12 @@ class HelperFunctions {
           (response as List).map((json) => project.fromJson(json)).toList();
 
       if (response.isEmpty) {
-       
-
         return [];
-        
       }
-   
+
       return projects;
     } catch (error) {
-     //return empty 
+      //return empty
       return [];
     }
   }
@@ -69,8 +66,6 @@ class HelperFunctions {
       //Selecting the project name to fetch its users
       final String projectname =
           selectedprojectname.isEmpty ? firstProjectName : selectedprojectname;
-      print(
-          'The retrieved project name from the home content: $selectedprojectname');
 
       //retrieve the users
       final response = await supabase
@@ -79,10 +74,7 @@ class HelperFunctions {
           .eq('project_name', projectname)
           .order('user_name');
       if (response.isEmpty) {
-
         return [];
-        
-        
       }
       final project_users =
           (response as List).map((json) => users.fromJson(json)).toList();
@@ -152,28 +144,59 @@ class HelperFunctions {
     }
   }
 
-  //Function to search a term in project table
-  Future<List<users>> searchInProjectTable(
-   //var column1,
-    String tableName,
+  //Function to search a term in User table
+  Future<List<users>> searchInUserTable(
+    //var column1,
     String query,
     BuildContext context,
-
     SupabaseClient supabase,
   ) async {
-
-    //using fetched first project name  from local storage as default search
-    //if query is empty by default search for first project
-    final searchquery=query.isEmpty ? 'Rajat' :query;
     try {
-        var response= await supabase.from('users').select().textSearch('user_name', searchquery) ;
-        var response2 =
+      var response =
+          await supabase.from('users').select().textSearch('user_name', query);
+
+      var response2 =
           (response.toList()).map((json) => users.fromJson(json)).toList();
-          
-       return response2 ;//as List<project>
-       
+      return response2; //as List<project>
     } catch (e) {
-    return [];
+      return [];
     }
-}
+  }
+
+  //Function to search a term in Project table
+  Future<List<project>> searchInProjectTable(
+    String query,
+    BuildContext context,
+    SupabaseClient supabase,
+  ) async {
+    try {
+      var response = await supabase
+          .from('projects')
+          .select()
+          .textSearch('project_name', query);
+
+      var response2 =
+          (response.toList()).map((json) => project.fromJson(json)).toList();
+      return response2; //as List<project>
+    } catch (e) {
+      return [];
+    }
+  }
+
+  //Function to search a term in Bugs table
+  Future<List<bugs>> searchInBugsTable(
+    String query,
+    BuildContext context,
+    SupabaseClient supabase,
+  ) async {
+    try {
+      var response =
+          await supabase.from('bugs').select().textSearch('bugs_name', query);
+      var response2 =
+          (response.toList()).map((json) => bugs.fromJson(json)).toList();
+      return response2; //as List<project>
+    } catch (e) {
+      return [];
+    }
+  }
 }

@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:project_management/models/bugs_model.dart';
+import 'package:project_management/models/projects_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/users_model.dart';
 import 'imports.dart';
@@ -18,21 +20,39 @@ class _SearchScreenState extends State<SearchScreen>
   TextEditingController searchTerm = TextEditingController();
 
   //List to store the data of  searched item
-  List<users> searchResults = [];
+  List<users> userSearchResults = [];
+  List<project> projectSearchResults = [];
+  List<bugs> bugSearchResults = [];
 
   TabController? tabcontroller;
   void search() async {
-    var results = await HelperFunctions().searchInProjectTable(
-        'users', searchTerm.text, context, widget.supabase) as List;
+    //search in user table
+    var usearchResult = await HelperFunctions()
+        .searchInUserTable(searchTerm.text, context, widget.supabase) as List;
     setState(() {
-      searchResults = results.cast<users>();
+      userSearchResults = usearchResult as List<users>;
     });
+
+    //search in project table
+    var psearchResult = await HelperFunctions().searchInProjectTable(
+        searchTerm.text, context, widget.supabase) as List;
+    setState(() {
+      projectSearchResults = psearchResult as List<project>;
+    });
+
+    //search in bugs table
+    var bsearchResult = await HelperFunctions()
+        .searchInBugsTable(searchTerm.text, context, widget.supabase) as List;
+    setState(() {
+      bugSearchResults = bsearchResult as List<bugs>;
+    });
+    // }
   }
 
   @override
   void initState() {
     super.initState();
-    tabcontroller = TabController(length: 1, vsync: this);
+    tabcontroller = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -44,8 +64,10 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    //Circular avatar icon list
-    List images = [
+    double width = MediaQuery.of(context).size.width;
+
+    ////User icons
+    List userIcon = [
       "assets/avatars/man (1).png",
       "assets/avatars/man (2).png",
       "assets/avatars/man (3).png",
@@ -53,13 +75,24 @@ class _SearchScreenState extends State<SearchScreen>
       "assets/avatars/man (5).png",
     ];
 
+    //Project icons
+    List projectIcon = [
+      "assets/projects/p1.png",
+      "assets/projects/p2.png",
+    ];
+
+    //Bugs icons
+    List bugIcon = [
+      "assets/bugs/b1.png",
+    ];
+
     return Row(children: [
       Container(
-          width: 700,
+          width: width - 200,
           decoration: const BoxDecoration(color: whiteBG),
           child: Column(children: [
-            //search field implementation
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                     width: 700,
@@ -90,7 +123,6 @@ class _SearchScreenState extends State<SearchScreen>
                     ]))
               ],
             ),
-
             TabBar(
                 dividerColor: Colors.transparent,
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -104,23 +136,24 @@ class _SearchScreenState extends State<SearchScreen>
                     borderRadius: BorderRadius.circular(12)),
                 controller: tabcontroller,
                 tabs: const [
-                  Text("projects", style: TextStyle(fontSize: 25)),
+                  Text("Users", style: TextStyle(fontSize: 25)),
+                  Text("Projects", style: TextStyle(fontSize: 25)),
+                  Text("Bugs", style: TextStyle(fontSize: 25)),
                 ]),
-
             Expanded(
                 child: TabBarView(controller: tabcontroller, children: [
-              if (searchResults.isNotEmpty)
+              //users search tab
+              if (userSearchResults.isNotEmpty)
                 SizedBox(
                     child: GridView.builder(
-                        itemCount: searchResults.length,
+                        itemCount: userSearchResults.length,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                         ),
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
-                          final searchdata = searchResults[0];
-
+                          final searchdata = userSearchResults[index];
                           return Container(
                             margin: const EdgeInsets.all(25),
                             color: whiteContainer,
@@ -135,23 +168,154 @@ class _SearchScreenState extends State<SearchScreen>
                                     leading: CircleAvatar(
                                       radius: 30,
                                       child: Image.asset(
-                                        images[Random().nextInt(5)],
+                                        userIcon[Random().nextInt(5)],
                                       ),
                                     ), // Iterate through rows
 
-                                    title: Text("Team: ${searchdata.name} "),
-                                    //subtitle: const Text("team lead"),
+                                    title:
+                                        Text("Name: ${searchdata.userName} "),
+                                    subtitle: Text("${searchdata.userEmail}"),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
+                                Padding(
+                                  padding: const EdgeInsets.only(
                                       top: 10.0, left: 25, bottom: 2),
-                                  child: Text("Project : "),
+                                  child: Text(
+                                      "Designation: ${searchdata.userDesignation}"),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
+                                Padding(
+                                  padding: const EdgeInsets.only(
                                       top: 10.0, left: 25, bottom: 2),
-                                  child: Text("description :"),
+                                  child: Text(
+                                      "Project: ${searchdata.projectName} "),
+                                )
+                              ],
+                            ),
+                          );
+                        }))
+              else
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text("No results found"),
+                ),
+
+              //projects search tab
+              if (projectSearchResults.isNotEmpty)
+                SizedBox(
+                    child: GridView.builder(
+                        itemCount: projectSearchResults.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final searchdata = projectSearchResults[index];
+                          return Container(
+                            margin: const EdgeInsets.all(25),
+                            color: whiteContainer,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 4, bottom: 2),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      child: Image.asset(
+                                        projectIcon[Random().nextInt(1)],
+                                      ),
+                                    ), // Iterate through rows
+
+                                    title: Text(
+                                        "Project: ${searchdata.projectName} "),
+                                    subtitle:
+                                        Text("Team: ${searchdata.teamName}"),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Date created: ${searchdata.dateCreated}"),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Description :${searchdata.projectDescription}"),
+                                )
+                              ],
+                            ),
+                          );
+                        }))
+              else
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text("No results found"),
+                ),
+
+              //bugs search tab
+              if (bugSearchResults.isNotEmpty)
+                SizedBox(
+                    child: GridView.builder(
+                        itemCount: bugSearchResults.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final searchdata = bugSearchResults[index];
+                          return Container(
+                            margin: const EdgeInsets.all(25),
+                            color: whiteContainer,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 4, bottom: 2),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      child: Image.asset(
+                                        bugIcon[0],
+                                      ),
+                                    ), // Iterate through rows
+
+                                    title: Text(
+                                        "Bug title: ${searchdata.bugsName}"),
+                                    subtitle:
+                                        Text("Status: ${searchdata.bugStatus}"),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Project :${searchdata.projectName} "),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Date created:${searchdata.dateCreated}"),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Updated date:${searchdata.updateDate} "),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text(
+                                      "Description: ${searchdata.bugsDescription}"),
                                 )
                               ],
                             ),
