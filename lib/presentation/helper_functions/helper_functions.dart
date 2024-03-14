@@ -1,14 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
-
-import 'dart:html';
-import 'dart:js';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:project_management/models/bugs_model.dart';
 import 'package:project_management/models/chats_model.dart';
 import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/models/users_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../screens/imports.dart';
 
 showErrorDialog(BuildContext context, String message) {
   showDialog(
@@ -48,16 +45,15 @@ class HelperFunctions {
           (response as List).map((json) => project.fromJson(json)).toList();
 
       if (response.isEmpty) {
-        print('response is empty');
+       
 
         return [];
-        // showErrorDialog(
-        //     context, 'Sorry Something went wrong while fetching the data');
+        
       }
-      print("\n\n The response for the team : $response");
+   
       return projects;
     } catch (error) {
-      showErrorDialog(context, error.toString());
+     //return empty 
       return [];
     }
   }
@@ -83,11 +79,10 @@ class HelperFunctions {
           .eq('project_name', projectname)
           .order('user_name');
       if (response.isEmpty) {
-        print('response is empty');
 
         return [];
-        // showErrorDialog(
-        //     context, 'Sorry Something went wrong while fetching the data');
+        
+        
       }
       final project_users =
           (response as List).map((json) => users.fromJson(json)).toList();
@@ -158,10 +153,10 @@ class HelperFunctions {
   }
 
   //Function to search a term in project table
-  Future searchInProjectTable(
+  Future<List<users>> searchInProjectTable(
    //var column1,
     String tableName,
-    var query,
+    String query,
     BuildContext context,
 
     SupabaseClient supabase,
@@ -169,66 +164,16 @@ class HelperFunctions {
 
     //using fetched first project name  from local storage as default search
     //if query is empty by default search for first project
-    //final searchquery=query;//query.isEmpty ? projectName :
-    print('query required to be exec in fn cid:$query');
-
-    String column1 = 'user_name';
-    //var column2 = 'team_name';
-    //var column3 = 'project_description';
+    final searchquery=query.isEmpty ? 'Rajat' :query;
     try {
-      // final response = await supabase.from(tableName).select().or((builder) => builder
-      //       ..ilike(column1, searchquery) as String
-      //       // ..ilike(column2, '%$searchquery%').toString()
-      //       // ..ilike(column3, '%$searchquery%').toString()
-       // );
-       print('Search terms to be passed to the function : $query');
-        var response2= await supabase.from('users').select().textSearch('user_name', query);
-        // var response2= await supabase.from('users').select().textSearch('user_name', 'havish');
-        
-      //       // Specify the columns you want to search across
-      //       builder.ilike(column1.toString(), '%$searchquery%');
-      //       builder.ilike(column2.toString(), '%$searchquery%'); //format - '%$query%'
-      //       builder.ilike(column3.toString(), '%$searchquery%');
-      //       // Add more columns as needed
-      //     }.toString() );
-print('Search term retrieved :${response2}');
-
-
-
-      final searchresponse =
-          (response2.toList()).map((json) => users.fromJson(json)).toList();
+        var response= await supabase.from('users').select().textSearch('user_name', searchquery) ;
+        var response2 =
+          (response.toList()).map((json) => users.fromJson(json)).toList();
           
-       return searchresponse;//as List<project>
+       return response2 ;//as List<project>
        
     } catch (e) {
-      //showErrorDialog(context, error.toString());
-      //Navigator.of(context).pop();
-    // try {
-    //   String column1 = 'project_name';
-    //   String column2 = 'team_name';
-    //   //String column3 = 'project_description';
-
-    //   final response = await supabase.from('projects').select().or((builder) {
-    //         // Specify the columns you want to search across
-    //         builder.ilike(column1.toString(), 'project');
-    //         builder.ilike(column2.toString(), 'project'); //'%$query%'
-    //         // Add more columns as needed
-    //       } as String);
-    //   final pres =
-    //       (response as List).map((json) => project.fromJson(json)).toList();
-    //   // .execute();
-
-    //   if (response.isEmpty) {
-    //     throw Exception('Error searching in  table: $pres');
-    //   }
-
-      // return pres; //as List<project>
-    // }
-    //
-    //
-    print(e);
     return [];
-
     }
 }
 }
