@@ -280,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen>
                                     leading: CircleAvatar(
                                       radius: 30,
                                       child: Image.asset(
-                                        images[0],
+                                        bugIcon[0],
                                       ),
                                     ), // Iterate through rows
 
