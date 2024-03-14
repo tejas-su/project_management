@@ -169,13 +169,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          var presponse = await widget.supabase.from('projects').update({
+          await widget.supabase.from('projects').update({
             'project_name': projectName.text,
             'date_created': formattedDate,
             'team_name': groupName,
             'project_description': projectDesc.text
           }).select();
-          var uresponse = await widget.supabase.from('users').update({
+          await widget.supabase.from('users').update({
             'user_name': userName.text,
             'user_designation': userDesig.text,
             'user_email': userEmail.text,
