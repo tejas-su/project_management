@@ -55,11 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: whiteContainer,
         title: Text(
           'Shrine',
-          style: GoogleFonts.dmSerifDisplay(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
+          // style: GoogleFonts.dmSerifDisplay(
+          //   fontSize: 25,
+          //   fontWeight: FontWeight.bold,
           ),
-        ),
+        //),
         titleSpacing: 25,
         automaticallyImplyLeading: false,
         actions: [
