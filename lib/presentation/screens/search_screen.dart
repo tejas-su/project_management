@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/users_model.dart';
 import 'imports.dart';
+
 class SearchScreen extends StatefulWidget {
   final SupabaseClient supabase;
   const SearchScreen({super.key, required this.supabase});
@@ -13,53 +14,36 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen>
     with TickerProviderStateMixin {
+  //search term controller
+  TextEditingController searchTerm = TextEditingController();
 
+  //List to store the data of  searched item
+  List<users> searchResults = [];
 
-          //search term controller
-    TextEditingController searchTerm = TextEditingController();
+  TabController? tabcontroller;
+  void search() async {
+    var results = await HelperFunctions().searchInProjectTable(
+        'users', searchTerm.text, context, widget.supabase) as List;
+    setState(() {
+      searchResults = results.cast<users>();
+    });
+  }
 
-    //List to store the data of  searched item
-    List<users> searchResults = [];
+  @override
+  void initState() {
+    super.initState();
+    tabcontroller = TabController(length: 1, vsync: this);
+  }
 
-    TabController? tabcontroller ;
-    void search() async {
-      var results = await HelperFunctions().searchInProjectTable(
-          'users', searchTerm.text, context, widget.supabase) as List;
-      setState(() {
-        searchResults = results.cast<users>();
-      });
-      
-    }
-
-@override
-void initState() {
-      super.initState();
-      tabcontroller = TabController(length: 1, vsync: this);
-    }
-
-    @override
-    void dispose() {
-      searchTerm.dispose();
-      tabcontroller!.dispose();
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    searchTerm.dispose();
+    tabcontroller!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
-
-    //    @override
-    //     void initState() {
-    //   // TODO: implement initState;
-    //     search();
-
-    //   super.initState();
-
-    // }
-
-    
-
     //Circular avatar icon list
     List images = [
       "assets/avatars/man (1).png",
@@ -136,7 +120,6 @@ void initState() {
                         scrollDirection: Axis.vertical,
                         itemBuilder: (context, index) {
                           final searchdata = searchResults[0];
-                          
 
                           return Container(
                             margin: const EdgeInsets.all(25),
@@ -156,8 +139,7 @@ void initState() {
                                       ),
                                     ), // Iterate through rows
 
-                                    title:
-                                        Text("Team: ${searchdata.name} "),
+                                    title: Text("Team: ${searchdata.name} "),
                                     //subtitle: const Text("team lead"),
                                   ),
                                 ),
@@ -175,10 +157,11 @@ void initState() {
                             ),
                           );
                         }))
-                        else
-                         Container(
-                          alignment: Alignment.center,
-                          child: const Text("No results found"),)
+              else
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text("No results found"),
+                )
             ]))
           ]))
     ]);
