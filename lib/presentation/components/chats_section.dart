@@ -91,7 +91,7 @@ class _CommentsSectionState extends State<CommentsSection> {
           );
         } else {
           //insert into the char table
-          var cresponse = await widget.supabase.from('chats').insert({
+          await widget.supabase.from('chats').insert({
             'chat': message,
             'project_name': projectName,
             'date': formattedDate,

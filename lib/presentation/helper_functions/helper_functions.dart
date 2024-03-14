@@ -93,7 +93,6 @@ class HelperFunctions {
           (response as List).map((json) => users.fromJson(json)).toList();
       return project_users;
     } catch (error) {
-      // showErrorDialog(context, error.toString());
       return [];
     }
   }

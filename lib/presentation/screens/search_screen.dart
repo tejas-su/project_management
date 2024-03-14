@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:project_management/presentation/screens/imports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen>
       setState(() {
         searchResults = results.cast<users>();
       });
-      print('Search Results Updated as :${searchResults[0].username}');
+      print('Search Results Updated as :${searchResults[0].userName}');
     }
 
 @override
@@ -139,7 +140,7 @@ void initState() {
                         itemBuilder: (context, index) {
                           final searchdata = searchResults[0];
                           print(
-                              'First user name retrieved in gried view buildr:${searchdata.username}');
+                              'First user name retrieved in gried view buildr:${searchdata}');
 
                           return Container(
                             margin: const EdgeInsets.all(25),
@@ -160,7 +161,7 @@ void initState() {
                                     ), // Iterate through rows
 
                                     title:
-                                        Text("Team: ${searchdata.username} "),
+                                        Text("Team: ${searchdata} "),
                                     //subtitle: const Text("team lead"),
                                   ),
                                 ),

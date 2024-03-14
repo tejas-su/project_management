@@ -1,13 +1,20 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/home_screen.dart';
+import 'package:project_management/app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'imports.dart';
 
 class UpdateScreen extends StatefulWidget {
   final SupabaseClient supabase;
-  const UpdateScreen({super.key, required this.supabase});
+  final String projectDescription;
+  final String primaryKey;
+
+  const UpdateScreen(
+      {super.key,
+      required this.supabase,
+      required this.primaryKey,
+      required this.projectDescription});
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
@@ -17,9 +24,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    TextEditingController projectName = TextEditingController();
+    TextEditingController projectName =
+        TextEditingController(text: widget.primaryKey);
 
-    TextEditingController projectDesc = TextEditingController();
+    TextEditingController projectDesc =
+        TextEditingController(text: widget.projectDescription);
 
     TextEditingController userName = TextEditingController();
     TextEditingController name = TextEditingController();
@@ -34,18 +43,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
     TextEditingController bugsDesc = TextEditingController();
 
-    void clearTextField() {
-projectName.clear();
-      projectDesc.clear();
-      userName.clear();
-      userEmail.clear();
-      userDesig.clear();
-      name.clear();
-      bugName.clear();
-      bugsDesc.clear();
-      bugStatus.clear();
-    }
-
     //fetch the date
     DateTime now = DateTime.now();
     //formatted date in the format dd-mm-yyyy
@@ -53,8 +50,6 @@ projectName.clear();
     //pull the team name from the cache
     final Storage localStorage = window.localStorage;
     var groupName = localStorage['groupName'];
-
-    
 
     //function to show error message
     void showErrorDialog(
@@ -78,18 +73,17 @@ projectName.clear();
     }
 
     //function to update the data to the database
-    void updateUser()async{
-      try{
-        if(userDesig.text.isEmpty ||
+    void updateUser() async {
+      try {
+        if (userDesig.text.isEmpty ||
             userName.text.isEmpty ||
-            userEmail.text.isEmpty ){
+            userEmail.text.isEmpty) {
           showErrorDialog(
             context,
             'Oops, something went wrong',
             'Please fill in all the fields',
           );
-        }
-            else{
+        } else {
           //show loading screen
           showDialog(
             context: context,
@@ -123,31 +117,25 @@ projectName.clear();
             'project_name': projectName.text,
             'name': userName.text,
           }).select();
-          //clear the text fields after saving
-          clearTextField();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
-          if (
-              uresponse.isNotEmpty 
-              ) {
-            showErrorDialog(context, 'Successfully added the user 🥳',
-                '');
+          if (uresponse.isNotEmpty) {
+            showErrorDialog(context, 'Successfully added the user 🥳', '');
           } else {
             showErrorDialog(context, 'Oops something went wrong 😭',
                 'Make sure you have an active internet connection');
           }
-
         }
-      }catch (e){
-        showErrorDialog(context, 'Oops something went wrong 😭',
-                '$e');
+      } catch (e) {
+        showErrorDialog(context, 'Oops something went wrong 😭', '$e');
       }
     }
-void updateProject() async {
+
+    void updateProject() async {
       try {
         if (projectName.text.isEmpty ||
-projectDesc.text.isEmpty ||
+            projectDesc.text.isEmpty ||
             userDesig.text.isEmpty ||
             userName.text.isEmpty ||
             userEmail.text.isEmpty ||
@@ -202,8 +190,6 @@ projectDesc.text.isEmpty ||
             'update_date': formattedDate,
           }).select();
 
-          //clear the text fields after saving
-          clearTextField();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
@@ -252,9 +238,9 @@ projectDesc.text.isEmpty ||
               ),
             ),
           );
-          var presponse = await widget.supabase.from('projects').update({
+          var presponse = await widget.supabase.from('projects').upsert({
             'project_name': projectName.text,
-            'date_created': formattedDate,
+            'date_created': formattedDate.toString(),
             'team_name': groupName,
             'project_description': projectDesc.text
           }).select();
@@ -293,10 +279,18 @@ projectDesc.text.isEmpty ||
         ),
         titleSpacing: 25,
         automaticallyImplyLeading: false,
-        leading: IconButton(onPressed: (){
+        leading: IconButton(
+            onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoadingScreen(supabase: widget.supabase, screen: HomeScreen(supabase: widget.supabase,)),));
-            }, icon: Icon(Icons.fork_left_rounded)),
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => LoadingScreen(
+                    supabase: widget.supabase,
+                    screen: HomeScreen(
+                      supabase: widget.supabase,
+                    )),
+              ));
+            },
+            icon: Icon(Icons.fork_left_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -331,7 +325,7 @@ projectDesc.text.isEmpty ||
           Padding(
             padding: const EdgeInsets.only(top: 0, left: 35, bottom: 10),
             child: Text(
-              'Creation Date: $formattedDate',
+              'Updation Date: $formattedDate',
               style: const TextStyle(fontSize: 15),
             ),
           ),
@@ -395,10 +389,10 @@ projectDesc.text.isEmpty ||
           ),
           CTAButton(
             text: 'Save',
-            onTap:updateUser,
+            onTap: updateUser,
             // left: 32,
             // right: width*1/3,
-                    ),
+          ),
           //bug details starts from here
           const Padding(
             padding: EdgeInsets.only(left: 32.0),
@@ -440,7 +434,7 @@ projectDesc.text.isEmpty ||
           ),
           const CTAButton(
             text: 'Save',
-            onTap:null,
+            onTap: null,
             // left: 32,
             // right: width*1/3,
           ),

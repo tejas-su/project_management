@@ -81,7 +81,7 @@ class _BugsSectionState extends State<BugsSection> {
                           style: const TextStyle(fontSize: 12),
                         ),
                         trailing: Text(
-                          'created date: ${bug.dateCreated}',
+                          'Created date: ${bug.dateCreated}',
                         ),
                         horizontalTitleGap: 10,
                       ),

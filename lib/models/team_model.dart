@@ -2,7 +2,7 @@ class team {
   int? teamId;
   String? teamName;
   String? teamEmail;
-  Null? teamPassword;
+  String? teamPassword;
 
   team({this.teamId, this.teamName, this.teamEmail, this.teamPassword});
 

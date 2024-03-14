@@ -1,36 +1,36 @@
 class users {
-  int? userid;
-  String? username;
-  String? email;
-  int? projectid;
-  int? teamId;
+  int? userId;
+  String? userName;
+  String? userEmail;
+  String? projectName;
   String? userDesignation;
+  String? name;
 
   users(
-      {this.userid,
-      this.username,
-      this.email,
-      this.projectid,
-      this.teamId,
-      this.userDesignation});
+      {this.userId,
+      this.userName,
+      this.userEmail,
+      this.projectName,
+      this.userDesignation,
+      this.name});
 
   users.fromJson(Map<String, dynamic> json) {
-    userid = json['userid'];
-    username = json['user_name'];
-    email = json['email'];
-    projectid = json['projectid'];
-    teamId = json['team_id'];
+    userId = json['user_id'];
+    userName = json['user_name'];
+    userEmail = json['user_email'];
+    projectName = json['project_name'];
     userDesignation = json['user_designation'];
+    name = json['name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userid'] = this.userid;
-    data['username'] = this.username;
-    data['email'] = this.email;
-    data['projectid'] = this.projectid;
-    data['team_id'] = this.teamId;
+    data['user_id'] = this.userId;
+    data['user_name'] = this.userName;
+    data['user_email'] = this.userEmail;
+    data['project_name'] = this.projectName;
     data['user_designation'] = this.userDesignation;
+    data['name'] = this.name;
     return data;
   }
 }

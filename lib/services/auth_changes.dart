@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/home_screen.dart';
+import 'package:project_management/app.dart';
 import 'package:project_management/presentation/screens/signin_screen.dart';
 import 'package:project_management/presentation/screens/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
