@@ -53,12 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         shape: const Border(bottom: BorderSide(width: 2, color: whiteBG)),
         backgroundColor: whiteContainer,
-        title: Text(
-          'Shrine',
-          // style: GoogleFonts.dmSerifDisplay(
-          //   fontSize: 25,
-          //   fontWeight: FontWeight.bold,
-          ),
+        title: Text('Shrine',
+            style: GoogleFonts.dmSerifDisplay(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            )),
         //),
         titleSpacing: 25,
         automaticallyImplyLeading: false,

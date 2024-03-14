@@ -119,7 +119,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
           );
           var presponse = await widget.supabase.from('projects').insert({
             'project_name': projectName.text,
-            'date_created': formattedDate,
+            'date_created': formattedDate.toString(),
             'team_name': groupName,
             'project_description': projectDesc.text
           }).select();

@@ -72,12 +72,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
       );
     }
 
-    //function to update the data to the database
+    //function to update user
     void updateUser() async {
       try {
         if (userDesig.text.isEmpty ||
             userName.text.isEmpty ||
-            userEmail.text.isEmpty) {
+            userEmail.text.isEmpty ||
+            projectName.text.isEmpty) {
           showErrorDialog(
             context,
             'Oops, something went wrong',
@@ -132,13 +133,10 @@ class _UpdateScreenState extends State<UpdateScreen> {
       }
     }
 
-    void updateProject() async {
+    //function to update the bugs
+    void updateBugs() async {
       try {
         if (projectName.text.isEmpty ||
-            projectDesc.text.isEmpty ||
-            userDesig.text.isEmpty ||
-            userName.text.isEmpty ||
-            userEmail.text.isEmpty ||
             bugName.text.isEmpty ||
             bugStatus.text.isEmpty) {
           showErrorDialog(
@@ -169,20 +167,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          await widget.supabase.from('projects').update({
-            'project_name': projectName.text,
-            'date_created': formattedDate,
-            'team_name': groupName,
-            'project_description': projectDesc.text
-          }).select();
-          await widget.supabase.from('users').update({
-            'user_name': userName.text,
-            'user_designation': userDesig.text,
-            'user_email': userEmail.text,
-            'project_name': projectName.text,
-            'name': userName.text,
-          }).select();
-          var bresponse = await widget.supabase.from('bugs').update({
+          //update user
+          var bresponse = await widget.supabase.from('bugs').upsert({
             'bugs_name': bugName.text,
             'bug_status': bugStatus.text,
             'bugs_description': bugsDesc.text,
@@ -207,7 +193,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     }
 
 //update or insert the project if it does not exist
-    void UpdateProject() async {
+    void updateProject() async {
       try {
         if (projectName.text.isEmpty || projectDesc.text.isEmpty) {
           showErrorDialog(
@@ -238,21 +224,22 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ),
             ),
           );
-          var presponse = await widget.supabase.from('projects').upsert({
-            'project_name': projectName.text,
-            'date_created': formattedDate.toString(),
-            'team_name': groupName,
-            'project_description': projectDesc.text
-          }).select();
+          var presponse = await widget.supabase
+              .from('projects')
+              .update({
+                'date_created': formattedDate.toString(),
+                'team_name': groupName,
+                'project_description': projectDesc.text
+              })
+              .eq('project_name', projectName.text.toString())
+              .select();
 
           //clear the text fields after saving
           dispose();
           //pop the loading screen after loading
 
           Navigator.of(context).pop();
-          if (presponse.isNotEmpty ||
-              presponse.isNotEmpty ||
-              presponse.isNotEmpty) {
+          if (presponse.isNotEmpty) {
             showErrorDialog(context, 'Successfully added your project 🥳',
                 'Happy Coding, Don\'t forget to squash those bugs');
           } else {
@@ -290,7 +277,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     )),
               ));
             },
-            icon: const Icon(Icons.fork_left_rounded)),
+            icon: const Icon(Icons.arrow_back_rounded)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -299,7 +286,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 32, left: 32, bottom: 0),
             child: Text(
-              "Team: $groupName",
+              "Team $groupName currently working on ${projectName.text}",
               style: GoogleFonts.dmSerifDisplay(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -314,20 +301,16 @@ class _UpdateScreenState extends State<UpdateScreen> {
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
-          InputTextField(
-            controller: projectName,
-            hintText: 'Enter Project Name',
-            color: whiteContainer,
-            bottom: 20,
-            left: 32,
-            right: 700,
-          ),
+
           Padding(
             padding: const EdgeInsets.only(top: 0, left: 35, bottom: 10),
             child: Text(
               'Updation Date: $formattedDate',
               style: const TextStyle(fontSize: 15),
             ),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           InputTextField(
             hintText: 'Enter Project Description',
@@ -390,8 +373,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           CTAButton(
             text: 'Save',
             onTap: updateUser,
-            // left: 32,
-            // right: width*1/3,
+            left: 32,
+            right: width * 1 / 1.3,
+          ),
+          const SizedBox(
+            height: 20,
           ),
           //bug details starts from here
           const Padding(
@@ -432,11 +418,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           const SizedBox(
             height: 30,
           ),
-          const CTAButton(
+          CTAButton(
             text: 'Save',
-            onTap: null,
-            // left: 32,
-            // right: width*1/3,
+            onTap: updateBugs,
+            left: 32,
+            right: width * 1 / 1.3,
           ),
           const SizedBox(
             height: 50,
