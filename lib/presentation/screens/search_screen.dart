@@ -1,10 +1,9 @@
-import 'dart:math';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:project_management/models/projects_model.dart';
 import 'package:project_management/presentation/screens/imports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../models/users_model.dart';
 
 class SearchScreen extends StatefulWidget {
   final SupabaseClient supabase;
@@ -16,15 +15,54 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen>
     with TickerProviderStateMixin {
+
+
+          //search term controller
+    TextEditingController searchTerm = TextEditingController();
+
+    //List to store the data of  searched item
+    List<users> searchResults = [];
+
+    TabController? tabcontroller ;
+    void search() async {
+      var results = await HelperFunctions().searchInProjectTable(
+          'users', searchTerm.text, context, widget.supabase) as List;
+      setState(() {
+        searchResults = results.cast<users>();
+      });
+      print('Search Results Updated as :${searchResults[0].username}');
+    }
+
+@override
+void initState() {
+      super.initState();
+      tabcontroller = TabController(length: 1, vsync: this);
+    }
+
+    @override
+    void dispose() {
+      searchTerm.dispose();
+      tabcontroller!.dispose();
+      super.dispose();
+    }
+
   @override
   Widget build(BuildContext context) {
 
-    HelperFunctions helperFunctions = HelperFunctions();
 
-    //search term controller
-    TextEditingController searchTerm = TextEditingController();
-    late String queryToFutureBuilder;
-    TabController tabcontroller = TabController(length: 1, vsync: this);
+
+    //    @override
+    //     void initState() {
+    //   // TODO: implement initState;
+    //     search();
+
+    //   super.initState();
+
+    // }
+
+    
+
+    //Circular avatar icon list
     List images = [
       "assets/avatars/man (1).png",
       "assets/avatars/man (2).png",
@@ -33,416 +71,119 @@ class _SearchScreenState extends State<SearchScreen>
       "assets/avatars/man (5).png",
     ];
 
-   
-
-    return Row(
-      children: [
-        Container(
+    return Row(children: [
+      Container(
           width: 700,
           decoration: const BoxDecoration(color: whiteBG),
-          child: Column(
-            children: [
-              //search field implementation
-              Row(
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: whiteContainer,
-                        ),
-                        child: Container(
-                          width: 500,
-                          child: TextField(
-                            controller: searchTerm,
-                            //  onChanged: (value) {
-                            //   search('users', search_term.text, context, widget.supabase);
-                            //  },  
-                            decoration: const InputDecoration(
-                              hintText: "Search",
-                              prefixIcon: Icon(Icons.search),
-                              border: InputBorder.none,
+          child: Column(children: [
+            //search field implementation
+            Row(
+              children: [
+                Container(
+                    width: 700,
+                    decoration: const BoxDecoration(color: whiteBG),
+                    child: Column(children: [
+                      //search field implementation
+                      Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: whiteContainer,
                             ),
-                          ),
-                        ),
-                      )
-                      ),                    
-                      
-                ],
-              ),
-               Container(
-                        // width: 5,
-                        // height: 5,
-                         child: CTAButton(
-                          
-                          text: 'search',
-                                              //  onTap: () => search(tabcontroller.toString(), search_term.toString(),context, widget.supabase)
-                                              onTap: (){
-setState(() {
-           queryToFutureBuilder=searchTerm.text;
-            print('updated query to search fn  :$queryToFutureBuilder');
-            helperFunctions.searchInProjectTable(tabcontroller.toString(),searchTerm.text,context,widget.supabase);
-          });
-                                              } 
-                                                
-                                              
-                                               ),
-                       ),
-              TabBar(
-                  dividerColor: Colors.transparent,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  unselectedLabelColor: Colors.grey,
-                  labelColor: Colors.black,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 24),
-                  tabAlignment: TabAlignment.center,
-                  splashBorderRadius: BorderRadius.circular(16),
-                  indicator: BoxDecoration(
-                      color: whiteContainer,
-                      borderRadius: BorderRadius.circular(12)),
-                  controller: tabcontroller,
-                  tabs: const [
-                    // Text(
-                    //   "Users",
-                    //   style: TextStyle(fontSize: 25),
-                    // ),
-                    Text("projects", style: TextStyle(fontSize: 25)),
-                    // Text("Projects with Bugs", style: TextStyle(fontSize: 25))
-                  ]),
-              Expanded(
-                child: TabBarView(controller: tabcontroller, children: [
-                  // //!Users screen
-                  // SizedBox(
-                  //   child: GridView.builder(
-                  //       itemCount: 5,
-                  //       gridDelegate:
-                  //           const SliverGridDelegateWithFixedCrossAxisCount(
-                  //         crossAxisCount: 3,
-                  //       ),
-                  //       scrollDirection: Axis.vertical,
-                  //       itemBuilder: (context, index) {
-                  //         return Container(
-                  //           margin: const EdgeInsets.all(16),
-                  //           color: whiteContainer,
-                  //           child: Column(
-                  //             mainAxisAlignment: MainAxisAlignment.start,
-                  //             crossAxisAlignment: CrossAxisAlignment.start,
-                  //             children: [
-                  //               Padding(
-                  //                 padding: const EdgeInsets.only(
-                  //                     top: 10.0, left: 4, bottom: 2),
-                  //                 child: ListTile(
-                  //                   leading: CircleAvatar(
-                  //                     radius: 30,
-                  //                     child: Image.asset(
-                  //                       images[index],
-                  //                     ),
-                  //                   ),
-                  //                   title: const Text("username"),
-                  //                   subtitle: const Text("use_designation"),
-                  //                 ),
-                  //               ),
-                  //               const Padding(
-                  //                 padding: EdgeInsets.only(
-                  //                     top: 10.0, left: 25, bottom: 2),
-                  //                 child: Text("Team : team_name"),
-                  //               ),
-                  //               const Padding(
-                  //                 padding: EdgeInsets.only(
-                  //                     top: 10.0, left: 25, bottom: 2),
-                  //                 child: Text("Project : project_name"),
-                  //               )
-                  //             ],
-                  //           ),
-                  //         );
-                  //       }),
-                  // ),
-                  //Projects  screen
-                  FutureBuilder(
-                   // key: ValueKey<String>('project_search$projectName'),
-                      future: helperFunctions.searchInProjectTable(
-                        'users',
-                        //tabcontroller.toString(),
-                        queryToFutureBuilder='',
-                        //queryToFutureBuilder,
-                      //  search_term.text,
-                        context,
-                        widget.supabase,
-                      ), //'projects',
-                      // 'project',
-                      // context,
-                      builder:
-                          (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Lottie.asset('lottie/ani1.json', height: 500);
-                        } else if (snapshot.hasError) {
-                          return showErrorDialog(
-                              context, 'error in retriewing data');
-                        }
-                        else  if (snapshot.hasData){
-                          final data = snapshot.data;
-                          return SizedBox(
-                            child: GridView.builder(
-                                itemCount: snapshot.data!.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: searchTerm,
+                                decoration: InputDecoration(
+                                  hintText: "Search",
+                                  suffixIcon: IconButton(
+                                      onPressed: search,
+                                      icon: const Icon(Icons.search)),
+                                  border: InputBorder.none,
                                 ),
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (context, index) {
-                                  //List<Row> rows = snapshot.data as List<Row>;
-                                  //  for (Row row in rows) {
-                                  //   String TEAMNAE = row.children[index].toString();
-                                  //   print('Required team name from row $index is $TEAMNAE');
-                                  //  }
-                                  final searchdata = data![index];
-                                  return Container(
-                                    margin: const EdgeInsets.all(25),
-                                    color: whiteContainer,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 10.0, left: 4, bottom: 2),
-                                          child: ListTile(
-                                            leading: CircleAvatar(
-                                              radius: 30,
-                                              child: Image.asset(
-                                                images[index],
-                                              ),
-                                            ), // Iterate through rows
-                  
-                                            title: Text(
-                                                "Team :${searchdata.username} "),
-                                            //subtitle: const Text("team lead"),
-                                          ),
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 10.0, left: 25, bottom: 2),
-                                          child: Text("Project : "),
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 10.0, left: 25, bottom: 2),
-                                          child: Text("description :"),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }),
-                          );
-                        }
-                        
-                         else if (snapshot.data!.isEmpty ) {
-                          return Text('No data found');
-                          // return const Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [ 
-                          //     ListTile(
-                          //       shape: BeveledRectangleBorder(
-                          //           borderRadius:
-                          //               BorderRadius.all(Radius.circular(10))),
-                          //       focusColor: whiteContainer,
-                          //       hoverColor: whiteContainer,
-                          //       autofocus: true,
-                          //       selected: true,
-                          //       selectedColor: black,
-                          //       selectedTileColor: whiteContainer,
-                          //       enabled: true,
-                          //       tileColor: whiteBG,
-                          //       leading: CircleAvatar(
-                          //           child: Text('😒',
-                          //               style: TextStyle(fontSize: 30))),
-                          //       title: Text(
-                          //         'Feels like everything\'s good ',
-                          //         style: TextStyle(fontSize: 15),
-                          //       ),
-                          //       subtitle: Text(
-                          //         'No bugs found, 🥳 ',
-                          //         style: TextStyle(fontSize: 12),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // );
-                        }
-                        //  else if (snapshot.data!.isEmpty) {
-                        //   return const Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       ListTile(
-                        //         shape: BeveledRectangleBorder(
-                        //             borderRadius:
-                        //                 BorderRadius.all(Radius.circular(10))),
-                        //         focusColor: whiteContainer,
-                        //         hoverColor: whiteContainer,
-                        //         autofocus: true,
-                        //         selected: true,
-                        //         selectedColor: black,
-                        //         selectedTileColor: whiteContainer,
-                        //         enabled: true,
-                        //         tileColor: whiteBG,
-                        //         leading: CircleAvatar(
-                        //             child: Text('😒',
-                        //                 style: TextStyle(fontSize: 30))),
-                        //         title: Text(
-                        //           'Feels like everything\'s good ',
-                        //           style: TextStyle(fontSize: 15),
-                        //         ),
-                        //         subtitle: Text(
-                        //           'No bugs found, 🥳 ',
-                        //           style: TextStyle(fontSize: 12),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   );
-                        // }
-                        
-                         
-                        else {
-                          return Text('');}
-                        //   // const ListTile(
-                        //   //   shape: const BeveledRectangleBorder(
-                        //   //       borderRadius: BorderRadius.all(Radius.circular(10))),
-                        //   //   focusColor: whiteContainer,
-                        //   //   hoverColor: whiteContainer,
-                        //   //   autofocus: true,
-                        //   //   //selected: selected,
-                        //   //   selectedColor: black,
-                        //   //   selectedTileColor: whiteContainer,
-                        //   //   enabled: true,
-                        //   //   tileColor: whiteBG,
-                        //   //   leading: const CircleAvatar(
-                        //   //       child: Text('😒',
-                        //   //       style: TextStyle(fontSize: 30))),
-                        //   //   title: const Text('Add a project',
-                        //   //     style:TextStyle(fontSize: 12),
-                        //   //   ),
-                        //   // );
-                        // }
-                      }
-                  
-                      // //!Projects with Bugs screen
-                      // SizedBox(
-                      //   child: GridView.builder(
-                      //       itemCount: 5,
-                      //       gridDelegate:
-                      //           const SliverGridDelegateWithFixedCrossAxisCount(
-                      //               crossAxisCount: 3, childAspectRatio: .9
-                      //               //crossAxisSpacing: 25,
-                      //               //mainAxisSpacing: 25,
-                      //               //mainAxisExtent: 200
-                      //               ),
-                      //       scrollDirection: Axis.vertical,
-                      //       itemBuilder: (context, index) {
-                      //         return Expanded(
-                      //           child: Container(
-                      //             margin: const EdgeInsets.all(25),
-                      //             color: whiteContainer,
-                      //             child: Column(
-                      //               mainAxisAlignment: MainAxisAlignment.start,
-                      //               crossAxisAlignment: CrossAxisAlignment.start,
-                      //               children: [
-                      //                 Padding(
-                      //                   padding: const EdgeInsets.only(
-                      //                       top: 10.0, left: 4, bottom: 2),
-                      //                   child: ListTile(
-                      //                     leading: CircleAvatar(
-                      //                       radius: 30,
-                      //                       child: Image.asset(
-                      //                         images[index],
-                      //                       ),
-                      //                     ),
-                      //                     title: const Text("Abhay B Prabhu"),
-                      //                     subtitle: const Text("team lead"),
-                      //                   ),
-                      //                 ),
-                      //                 const Padding(
-                      //                   padding: EdgeInsets.only(
-                      //                       top: 10.0, left: 25, bottom: 1),
-                      //                   child: Text("Team : Kraken"),
-                      //                 ),
-                      //                 const Padding(
-                      //                   padding: EdgeInsets.only(
-                      //                       top: 10.0, left: 25, bottom: 1),
-                      //                   child: Text("Project : Lady_Bug"),
-                      //                 ),
-                      //                 const Padding(
-                      //                   padding: EdgeInsets.only(
-                      //                     top: 10.0,
-                      //                     left: 25,
-                      //                   ),
-                      //                   child: Text("Bugs : 2"),
-                      //                 )
-                      //               ],
-                      //             ),
-                      //           ),
-                      //         );
-                      //       }),
-                      // ),
-                      )
-                ]),
-              ),
-            ],
-          ),
-        ),
+                              ),
+                            ),
+                          )),
+                    ]))
+              ],
+            ),
 
-        // //!Description
-        // Padding(
-        //   padding: const EdgeInsets.all(16.0),
-        //   child: Container(
-        //       width: 700,
-        //       decoration: BoxDecoration(
-        //         borderRadius: BorderRadius.circular(20),
-        //         color: whiteContainer,
-        //       ),
-        //       child: Column(children: [
-        //         Column(
-        //             mainAxisAlignment: MainAxisAlignment.start,
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: [
-        //               ListTile(
-        //                 leading: CircleAvatar(
-        //                   child: Image.asset(
-        //                     "assets/avatars/man (1).png",
-        //                   ),
-        //                 ),
-        //                 title: const Text(
-        //                   "User name",
-        //                   style: TextStyle(fontSize: 25),
-        //                 ),
-        //                 subtitle: const Text("user_email"),
-        //               ),
-        //               const Padding(
-        //                 padding: EdgeInsets.all(16.0),
-        //                 child: SizedBox(
-        //                   child: Column(
-        //                     mainAxisAlignment: MainAxisAlignment.start,
-        //                     crossAxisAlignment: CrossAxisAlignment.start,
-        //                     children: [
-        //                       Text("All details..."),
-        //                       Text("user_designation"),
-        //                       Text("team_name"),
-        //                       Text("Project: project_name"),
-        //                       Text("Project: project_description"),
-        //                       Text("Bug : Bug_description"),
-        //                       Text("Bug Description:"),
-        //                       Text(
-        //                           "Bug Description......Bug Description\nBug Description......Bug Description\nBug Description......Bug Description"),
-        //                       Text("Bug status")
-        //                     ],
-        //                   ),
-        //                 ),
-        //               ),
-        //             ]),
-        //       ])),
-        // )
-      ],
-    );
+            TabBar(
+                dividerColor: Colors.transparent,
+                indicatorSize: TabBarIndicatorSize.tab,
+                unselectedLabelColor: Colors.grey,
+                labelColor: Colors.black,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 24),
+                tabAlignment: TabAlignment.center,
+                splashBorderRadius: BorderRadius.circular(16),
+                indicator: BoxDecoration(
+                    color: whiteContainer,
+                    borderRadius: BorderRadius.circular(12)),
+                controller: tabcontroller,
+                tabs: const [
+                  Text("projects", style: TextStyle(fontSize: 25)),
+                ]),
+
+            Expanded(
+                child: TabBarView(controller: tabcontroller, children: [
+              if (searchResults.isNotEmpty)
+                SizedBox(
+                    child: GridView.builder(
+                        itemCount: searchResults.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final searchdata = searchResults[0];
+                          print(
+                              'First user name retrieved in gried view buildr:${searchdata.username}');
+
+                          return Container(
+                            margin: const EdgeInsets.all(25),
+                            color: whiteContainer,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, left: 4, bottom: 2),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 30,
+                                      child: Image.asset(
+                                        images[index],
+                                      ),
+                                    ), // Iterate through rows
+
+                                    title:
+                                        Text("Team: ${searchdata.username} "),
+                                    //subtitle: const Text("team lead"),
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text("Project : "),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 10.0, left: 25, bottom: 2),
+                                  child: Text("description :"),
+                                )
+                              ],
+                            ),
+                          );
+                        }))
+                        else
+                         Container(
+                          alignment: Alignment.center,
+                          child: Text("No results found"),)
+            ]))
+          ]))
+    ]);
   }
 }

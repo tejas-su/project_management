@@ -159,10 +159,10 @@ class HelperFunctions {
   }
 
   //Function to search a term in project table
-  Future searchInProjectTable(
+  Future<List<users>> searchInProjectTable(
    //var column1,
     String tableName,
-    var query,
+    String query,
     BuildContext context,
 
     SupabaseClient supabase,
@@ -170,8 +170,8 @@ class HelperFunctions {
 
     //using fetched first project name  from local storage as default search
     //if query is empty by default search for first project
-    //final searchquery=query;//query.isEmpty ? projectName :
-    print('query required to be exec in fn cid:$query');
+    final searchquery=query.isEmpty ? 'Rajat' :query;
+    print('query required to be exec in fn cid:$searchquery');
 
     String column1 = 'user_name';
     //var column2 = 'team_name';
@@ -182,8 +182,8 @@ class HelperFunctions {
       //       // ..ilike(column2, '%$searchquery%').toString()
       //       // ..ilike(column3, '%$searchquery%').toString()
        // );
-       print('Search terms to be passed to the function : $query');
-        var response2= await supabase.from('users').select().textSearch('user_name', query);
+       print('Searchquery terms to be passed to the function : $query');
+        var response= await supabase.from('users').select().textSearch('user_name', searchquery) ;
         // var response2= await supabase.from('users').select().textSearch('user_name', 'havish');
         
       //       // Specify the columns you want to search across
@@ -192,14 +192,14 @@ class HelperFunctions {
       //       builder.ilike(column3.toString(), '%$searchquery%');
       //       // Add more columns as needed
       //     }.toString() );
-print('Search term retrieved :${response2}');
+print('Search term retrieved :${response}');
 
 
 
-      final searchresponse =
-          (response2.toList()).map((json) => users.fromJson(json)).toList();
+        var response2 =
+          (response.toList()).map((json) => users.fromJson(json)).toList();
           
-       return searchresponse;//as List<project>
+       return response2 ;//as List<project>
        
     } catch (e) {
       //showErrorDialog(context, error.toString());
