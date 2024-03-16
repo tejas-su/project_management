@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:project_management/presentation/screens/update_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../app.dart';
 import 'imports.dart';
@@ -34,6 +33,68 @@ class _HomeContentState extends State<HomeContent> {
       selectedprojectname = projectname;
       selectedIndex = index;
     });
+  }
+
+  //update user function
+  void updateProject(
+      projectName, projectDescription, BuildContext context, supabase) {
+    TextEditingController projectcontroller =
+        TextEditingController(text: projectName);
+    TextEditingController projectDescriptionController =
+        TextEditingController(text: projectDescription);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: SizedBox(
+          width: 500,
+          height: 460,
+          child: Column(
+            children: [
+              Text(
+                "Team $groupName currently working on $projectName",
+                style: GoogleFonts.dmSerifDisplay(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Project',
+                controller: projectcontroller,
+              ),
+              const SizedBox(height: 20),
+              InputTextField(
+                left: 0,
+                right: 0,
+                hintText: 'Project Description',
+                controller: projectDescriptionController,
+              ),
+              const SizedBox(height: 20),
+              const SizedBox(
+                height: 25,
+              ),
+              CTAButton(
+                text: 'Save',
+                onTap: () async {
+                  try {
+                    await supabase.from('projects').upsert({
+                      'project_name': projectcontroller.text.toString(),
+                      'project_description':
+                          projectDescriptionController.text.toString(),
+                    });
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    print('Update user error: $e');
+                  }
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   late String deletingproject = '';
@@ -127,16 +188,6 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
-  late String firstproject;
-  void updateProject(projectName, projectDescription) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => UpdateScreen(
-        supabase: supabase,
-        primaryKey: projectName,
-        projectDescription: projectDescription,
-      ),
-    ));
-  }
 
   void updateUser(projectName, name, userDesignation, userName, userEmail,
       BuildContext context) {
@@ -230,7 +281,7 @@ class _HomeContentState extends State<HomeContent> {
         //
         Container(
           height: 800,
-          width: 350,
+          width: 400,
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30), topRight: Radius.circular(30)),
@@ -308,7 +359,9 @@ class _HomeContentState extends State<HomeContent> {
                                   IconButton(
                                       onPressed: () => updateProject(
                                           projects.projectName,
-                                          projects.projectDescription),
+                                          projects.projectDescription,
+                                          context,
+                                          supabase),
                                       icon: const Icon(
                                         Icons.edit_rounded,
                                         size: 20,
@@ -339,7 +392,7 @@ class _HomeContentState extends State<HomeContent> {
         //
         Container(
           height: 800,
-          width: 350,
+          width: 400,
           padding: const EdgeInsets.only(top: 10),
           decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
@@ -442,7 +495,7 @@ class _HomeContentState extends State<HomeContent> {
         //
         Container(
             height: 800,
-            width: 700,
+            width: 770,
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
